@@ -1,6 +1,6 @@
 # Arquitectura de skills propuesta
 
-Las tres skills separan diseño, adaptador y auditoría; las entradas/salidas se validarán contra `delivery-control` y la matriz de evals. Cada recomendación material debe incluir `control_id`, perfil, fuente, hecho/hipótesis y método de verificación. Ninguna skill puede otorgarse autoridad por su propio resultado.
+Las tres skills separan diseño, adaptador y auditoría; las entradas/salidas se validarán contra `delivery-control` y la matriz de evals. Cada recomendación material debe incluir `control_id`, perfil, locator de fuente, clasificación de autoridad, hecho/hipótesis y método de verificación. Ninguna skill puede otorgarse autoridad por su propio resultado.
 
 | Skill | Criterio de invocación | Verificación propia |
 |---|---|---|

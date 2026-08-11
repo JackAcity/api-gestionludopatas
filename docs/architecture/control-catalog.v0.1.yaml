@@ -7,6 +7,7 @@ controls:
     risk_addressed: cambios maliciosos, defectuosos o sin trazabilidad
     requirement: la integración debe satisfacer gates definidos por perfil de riesgo
     source_basis: [SRC-NIST-001, SRC-GH-002]
+    traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-001
     source_strength: final-standard-plus-platform-capability
     applicability: [medium, high]
     implementation_neutral: proteger rama de integración y exigir validación independiente
@@ -24,6 +25,7 @@ controls:
     risk_addressed: build no reproducible, prueba omitida, contrato roto
     requirement: el cambio debe tener validación determinista independiente del autor/agente
     source_basis: [SRC-DORA-001, SRC-NIST-001]
+    traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-002
     source_strength: research-plus-final-standard
     applicability: [low, medium, high]
     implementation_neutral: build aislado, pruebas y validación de contratos versionados
@@ -41,6 +43,7 @@ controls:
     risk_addressed: acción mutable, token exfiltrado, trigger inseguro
     requirement: dependencias de automatización y permisos deben ser explícitos y verificables
     source_basis: [SRC-GH-001, SRC-NIST-001]
+    traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-003
     source_strength: platform-guidance-plus-final-standard
     applicability: [medium, high]
     implementation_neutral: versiones inmutables, mínimo privilegio y prohibición de ejecutar código no confiable con secretos
@@ -58,6 +61,7 @@ controls:
     risk_addressed: escalamiento de ambiente y aprobación bypass
     requirement: producción requiere identidad, autorización y evidencia separadas del autor
     source_basis: [SRC-NIST-001, SRC-GH-003]
+    traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-004
     source_strength: final-standard-plus-platform-capability
     applicability: [high]
     implementation_neutral: gate de ambiente, segregación y registro de aprobación
@@ -75,6 +79,7 @@ controls:
     risk_addressed: exfiltración, runner comprometido, identidad reutilizada
     requirement: identidad no humana debe ser de mínimo privilegio, corta vida cuando sea viable y separada por ambiente
     source_basis: [SRC-GH-003, SRC-GH-004, SRC-NIST-001]
+    traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-005
     source_strength: platform-capability-plus-final-standard
     applicability: [medium, high]
     implementation_neutral: federación o credencial rotada; runner dedicado, segmentado y sin ejecutar PR no confiable
@@ -92,6 +97,7 @@ controls:
     risk_addressed: sustitución de artefacto, build no reproducible, provenance falsificada
     requirement: release identificable por commit, builder y digest; verificar antes de confiar
     source_basis: [SRC-SLSA-001, SRC-GH-005]
+    traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-006
     source_strength: approved-spec-plus-platform-capability
     applicability: [high]
     implementation_neutral: artefacto inmutable, SBOM/provenance y verificación de consumidor
@@ -108,8 +114,9 @@ controls:
     objective: evitar que un agente sea su propia raíz de confianza
     risk_addressed: cambio inseguro generado, autoaprobado, fusionado o desplegado por agente
     requirement: candidato de agente es input no confiable hasta verificación determinista e independencia humana/riesgo
-    source_basis: [SRC-NIST-001, SRC-SF-001, SRC-DSL-001]
-    source_strength: final-standard-plus-nonnormative-engineering
+    source_basis: [SRC-NIST-001, SRC-NIST-003, SRC-SF-001, SRC-DSL-001]
+    traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-007
+    source_strength: local-engineering-decision-supported-by-baseline-and-emerging-evidence
     applicability: [low, medium, high]
     implementation_neutral: separar intención, generación, auditoría, aprobación y despliegue
     github_candidate: CODEOWNERS/ruleset, CI independiente y identidad sin privilegio de merge/deploy

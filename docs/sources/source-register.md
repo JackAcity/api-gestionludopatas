@@ -1,4 +1,4 @@
-# Registro de fuentes v0.1
+# Registro de fuentes v0.2
 
 Regla: una fuente es normativa solo si su estado y emisor lo permiten. Fecha de acceso de todos los registros: **2026-08-11**.
 
@@ -14,6 +14,7 @@ Regla: una fuente es normativa solo si su estado y emisor lo permiten. Fecha de 
 | SRC-GH-003 | GitHub Docs, *Deployments and environments* | Capacidad de plataforma, vigente al acceso | https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments | Capacidad/limitación de plataforma | Environments, protecciones, secretos y restricciones de plan para repos privados. | No vuelve aislado un runner autoalojado ni reemplaza aprobación independiente. |
 | SRC-GH-004 | GitHub Docs, *OpenID Connect reference* | Capacidad de plataforma, vigente al acceso | https://docs.github.com/en/actions/reference/security/oidc | Capacidad/guía de plataforma | Tokens de corta vida y condiciones sobre claims para federación. | No configura el trust del proveedor ni concede acceso sin `id-token: write`. |
 | SRC-GH-005 | GitHub Docs, *Artifact attestations* | Capacidad de plataforma, vigente al acceso | https://docs.github.com/en/actions/concepts/security/artifact-attestations | Capacidad/guía de plataforma | Provenance/SBOM firmados y necesidad de verificarlos. | No garantiza seguridad si no se verifica; disponibilidad privada depende del plan. |
+| SRC-NIST-003 | NIST NCCoE, *Accelerating the Adoption of Software and Artificial Intelligence Agent Identity and Authorization* | Initial Public Draft / concept paper, 2026-02-05 | https://csrc.nist.gov/pubs/other/2026/02/05/accelerating-the-adoption-of-software-and-ai-agent/ipd | Evidencia emergente oficial | Riesgos de identidad, autorización, auditoría, no repudio y prompt injection en agentes con acceso a datos, herramientas y aplicaciones. | No es un estándar final ni prescribe separación de funciones para agentes. |
 | SRC-SF-001 | unclebob, *SwarmForge README* | Proyecto operativo, estado dinámico | https://github.com/unclebob/swarm-forge | Referencia de herramienta, no normativa | Roles, worktrees, handoffs y separación de agentes locales. | No es estándar de seguridad, no aprueba cambios ni convierte agentes en actores confiables. |
 | SRC-DSL-001 | Unmesh Joshi / Martin Fowler, *DSLs Enable Reliable Use of LLMs* | Artículo técnico, 2026-07-14 | https://martinfowler.com/articles/llm-and-dsls.html | Perspectiva de ingeniería, no normativa | DSL pequeño, modelo semántico y validador determinista como arnés para LLMs. | No prueba que un DSL sea apropiado, seguro o suficiente sin evaluación independiente. |
 
@@ -28,4 +29,5 @@ Regla: una fuente es normativa solo si su estado y emisor lo permiten. Fecha de 
 | SRC-SLSA-001 | Ninguno conocido al acceso. | Nivel alcanzado por este repositorio. |
 | SRC-DORA-001/002 | No aplica: investigación actualizable. | Umbral universal de rendimiento. |
 | SRC-GH-001 a 005 | No aplica: documentación viva. | Plan/licencia/capacidad activa de este repo. |
+| SRC-NIST-003 | No aplica: trabajo emergente. | Requisito normativo final para agentes. |
 | SRC-SF-001 / SRC-DSL-001 | No aplica: referencia no normativa. | Requisito de seguridad o cumplimiento. |

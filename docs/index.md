@@ -1,4 +1,4 @@
-# Secure Software Delivery Core — índice v0.1
+# Secure Software Delivery Core — índice v0.2
 
 **Estado:** diseño y evaluación; no es una declaración de cumplimiento ni una implementación aprobada. **Fecha de corte:** 2026-08-11.
 
@@ -6,13 +6,16 @@ Este corpus separa un modelo de control portable de sus adaptadores. Un requisit
 
 | Área | Artefacto principal | Estado |
 |---|---|---|
-| Evidencia y fuentes | [registro de fuentes](sources/source-register.md) | Verificado v0.1 |
+| Evidencia y fuentes | [registro de fuentes](sources/source-register.md) y [trazabilidad](architecture/source-to-control-traceability.v0.2.yaml) | Verificado / propuesto |
 | Modelo portable | [modelo de control](architecture/control-model.md) | Propuesto |
 | Catálogo verificable | [catálogo YAML](architecture/control-catalog.v0.1.yaml) | Propuesto |
-| Riesgos | [modelo de amenazas](architecture/threat-model.md) | Propuesto |
-| GitHub | [mapa de capacidades](github/platform-capability-map.md) | Parcialmente verificado |
-| Evaluación | [`evals/`](../evals/) | Diseñado; no ejecutado |
+| Riesgos | [modelo de amenazas v0.2](architecture/threat-model.md) | Propuesto |
+| Evidencia | [modelo](architecture/evidence-model.md) y [schema](architecture/evidence-bundle.schema.v0.1.json) | Propuesto |
+| GitHub | [mapa de capacidades v0.2](github/platform-capability-map.md) | Parcialmente verificado |
+| Evaluación | [estrategia v0.2](../evals/strategy.v0.2.md) y [`evals/`](../evals/) | Diseñado; no ejecutado |
 | Agentes y DSL | [gobierno de agentes](architecture/agent-governance.md) | Propuesto |
 | Decisión fundacional | [ADR-0001](adr/ADR-0001-platform-neutral-control-model.md) | Propuesto para aprobación |
+
+El Gate 1 permanece abierto hasta completar la [lista de cierre](architecture/gate-1-closure-checklist.md).
 
 La siguiente fase solo puede comenzar cuando se aprueben los supuestos abiertos, el catálogo, el modelo de amenazas y la matriz de evaluación. Los workflows existentes en la PR `#1` son un candidato no fusionado, no evidencia de que este modelo haya sido implementado o aprobado.

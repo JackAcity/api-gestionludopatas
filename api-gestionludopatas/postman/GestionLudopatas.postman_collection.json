@@ -1,0 +1,214 @@
+{
+  "info": {
+    "name": "GestionLudopatas.Api",
+    "description": "8 operaciones sobre bd_autobot, puente seguro para UiPath. Auth: API Key (X-Api-Key) + IP allowlist — Decision D2, reemplaza el OAuth2 de la propuesta original en endpoint/.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      { "key": "key", "value": "X-Api-Key", "type": "string" },
+      { "key": "value", "value": "{{apiKey}}", "type": "string" },
+      { "key": "in", "value": "header", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "Cortes - Resolver inicio",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Correlation-Id", "value": "{{correlationId}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fechaHoraEvaluacion\": \"2026-08-04T21:00:00-05:00\",\n  \"timeoutMinutos\": 30\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/v1/cortes/resoluciones-inicio", "host": ["{{baseUrl}}"], "path": ["api", "v1", "cortes", "resoluciones-inicio"] }
+      },
+      "response": [
+        {
+          "name": "200 - resolución",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/cortes/resoluciones-inicio" },
+          "status": "OK", "code": 200,
+          "body": "{\n  \"accion\": \"RETOMA\",\n  \"corteId\": 125,\n  \"corteColgadoOficialId\": null,\n  \"corteColgadoManualId\": 124\n}"
+        },
+        {
+          "name": "422 - fechaHoraEvaluacion ausente (GL-CORTE-RES-001)",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/cortes/resoluciones-inicio" },
+          "status": "Unprocessable Entity", "code": 422,
+          "body": "{\n  \"type\": \"https://errors.example.invalid/gestion-ludopatas/gl-corte-res-001\",\n  \"title\": \"Solicitud no procesable\",\n  \"status\": 422,\n  \"code\": \"GL-CORTE-RES-001\",\n  \"detail\": \"fechaHoraEvaluacion es obligatoria.\",\n  \"traceId\": \"00-example-trace-id\",\n  \"timestamp\": \"2026-08-04T21:00:00Z\",\n  \"retryable\": false,\n  \"source\": \"api\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Cortes - Crear",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Correlation-Id", "value": "{{correlationId}}" },
+          { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tipoCorte\": \"manual\",\n  \"fechaHoraCorte\": null,\n  \"fechaHoraEjecucion\": \"2026-08-05T08:12:00-05:00\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/v1/cortes", "host": ["{{baseUrl}}"], "path": ["api", "v1", "cortes"] }
+      },
+      "response": [
+        {
+          "name": "201 - creado",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/cortes" },
+          "status": "Created", "code": 201,
+          "body": "{\n  \"corteId\": 126\n}"
+        },
+        {
+          "name": "409 - Idempotency-Key reutilizada con otro payload (GL-IDEMP-001)",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/cortes" },
+          "status": "Conflict", "code": 409,
+          "body": "{\n  \"type\": \"https://errors.example.invalid/gestion-ludopatas/gl-idemp-001\",\n  \"title\": \"Conflicto\",\n  \"status\": 409,\n  \"code\": \"GL-IDEMP-001\",\n  \"detail\": \"La clave de idempotencia ya fue usada con otra solicitud.\",\n  \"traceId\": \"00-example-trace-id\",\n  \"timestamp\": \"2026-08-04T21:00:00Z\",\n  \"retryable\": false,\n  \"source\": \"api\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Pendientes - CALIMACO ingreso",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Correlation-Id", "value": "{{correlationId}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"corteIdActual\": 126,\n  \"maxReintentosPorSistema\": 3,\n  \"esReintentoForzado\": false\n}" },
+        "url": { "raw": "{{baseUrl}}/api/v1/pendientes/calimaco/ingresos/busqueda", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pendientes", "calimaco", "ingresos", "busqueda"] }
+      },
+      "response": [
+        {
+          "name": "200 - con resultados",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/calimaco/ingresos/busqueda" },
+          "status": "OK", "code": 200,
+          "body": "[\n  {\n    \"id\": 501,\n    \"numeroDocumento\": \"00123456\",\n    \"tipoDocumento\": \"DNI\",\n    \"corteId\": 120,\n    \"ultimoCorteId\": 125,\n    \"calimacoUltimoCorteId\": 124,\n    \"calimacoReintentos\": 1\n  }\n]"
+        },
+        {
+          "name": "422 - corteIdActual invalido (GL-PEND-CAL-ING-001)",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/calimaco/ingresos/busqueda" },
+          "status": "Unprocessable Entity", "code": 422,
+          "body": "{\n  \"type\": \"https://errors.example.invalid/gestion-ludopatas/gl-pend-cal-ing-001\",\n  \"title\": \"Solicitud no procesable\",\n  \"status\": 422,\n  \"code\": \"GL-PEND-CAL-ING-001\",\n  \"detail\": \"corteIdActual debe ser mayor que cero.\",\n  \"traceId\": \"00-example-trace-id\",\n  \"timestamp\": \"2026-08-04T21:00:00Z\",\n  \"retryable\": false,\n  \"source\": \"api\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Pendientes - CALIMACO salida",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Correlation-Id", "value": "{{correlationId}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"corteIdActual\": 126,\n  \"maxReintentosPorSistema\": 3,\n  \"esReintentoForzado\": false\n}" },
+        "url": { "raw": "{{baseUrl}}/api/v1/pendientes/calimaco/salidas/busqueda", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pendientes", "calimaco", "salidas", "busqueda"] }
+      },
+      "response": [
+        {
+          "name": "200 - sin resultados",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/calimaco/salidas/busqueda" },
+          "status": "OK", "code": 200,
+          "body": "[]"
+        },
+        {
+          "name": "422 - maxReintentosPorSistema invalido (GL-PEND-CAL-SAL-002)",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/calimaco/salidas/busqueda" },
+          "status": "Unprocessable Entity", "code": 422,
+          "body": "{\n  \"type\": \"https://errors.example.invalid/gestion-ludopatas/gl-pend-cal-sal-002\",\n  \"title\": \"Solicitud no procesable\",\n  \"status\": 422,\n  \"code\": \"GL-PEND-CAL-SAL-002\",\n  \"detail\": \"maxReintentosPorSistema debe ser mayor que cero.\",\n  \"traceId\": \"00-example-trace-id\",\n  \"timestamp\": \"2026-08-04T21:00:00Z\",\n  \"retryable\": false,\n  \"source\": \"api\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Pendientes - CMP ingreso",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Correlation-Id", "value": "{{correlationId}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"corteIdActual\": 126,\n  \"maxReintentosPorSistema\": 3,\n  \"esReintentoForzado\": false\n}" },
+        "url": { "raw": "{{baseUrl}}/api/v1/pendientes/cmp/ingresos/busqueda", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pendientes", "cmp", "ingresos", "busqueda"] }
+      },
+      "response": [
+        {
+          "name": "200 - con resultados",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/cmp/ingresos/busqueda" },
+          "status": "OK", "code": 200,
+          "body": "[\n  {\n    \"id\": 502,\n    \"numeroDocumento\": \"CE-009981\",\n    \"tipoDocumento\": \"CARNET_EXTRANJERIA\",\n    \"corteId\": 121,\n    \"ultimoCorteId\": 125,\n    \"cmpUltimoCorteId\": null,\n    \"cmpReintentos\": 0\n  }\n]"
+        },
+        {
+          "name": "422 - esReintentoForzado enviado null (GL-PEND-CMP-ING-003)",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/cmp/ingresos/busqueda" },
+          "status": "Unprocessable Entity", "code": 422,
+          "body": "{\n  \"type\": \"https://errors.example.invalid/gestion-ludopatas/gl-pend-cmp-ing-003\",\n  \"title\": \"Solicitud no procesable\",\n  \"status\": 422,\n  \"code\": \"GL-PEND-CMP-ING-003\",\n  \"detail\": \"esReintentoForzado no puede ser null.\",\n  \"traceId\": \"00-example-trace-id\",\n  \"timestamp\": \"2026-08-04T21:00:00Z\",\n  \"retryable\": false,\n  \"source\": \"api\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Pendientes - CMP salida",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Correlation-Id", "value": "{{correlationId}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"corteIdActual\": 126,\n  \"maxReintentosPorSistema\": 3,\n  \"esReintentoForzado\": true\n}" },
+        "url": { "raw": "{{baseUrl}}/api/v1/pendientes/cmp/salidas/busqueda", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pendientes", "cmp", "salidas", "busqueda"] }
+      },
+      "response": [
+        {
+          "name": "200 - con resultados",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/cmp/salidas/busqueda" },
+          "status": "OK", "code": 200,
+          "body": "[]"
+        },
+        {
+          "name": "422 - corteIdActual invalido (GL-PEND-CMP-SAL-001)",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/cmp/salidas/busqueda" },
+          "status": "Unprocessable Entity", "code": 422,
+          "body": "{\n  \"type\": \"https://errors.example.invalid/gestion-ludopatas/gl-pend-cmp-sal-001\",\n  \"title\": \"Solicitud no procesable\",\n  \"status\": 422,\n  \"code\": \"GL-PEND-CMP-SAL-001\",\n  \"detail\": \"corteIdActual debe ser mayor que cero.\",\n  \"traceId\": \"00-example-trace-id\",\n  \"timestamp\": \"2026-08-04T21:00:00Z\",\n  \"retryable\": false,\n  \"source\": \"api\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Pendientes - SICA ingreso",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Correlation-Id", "value": "{{correlationId}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"maxReintentosPorSistema\": 3\n}" },
+        "url": { "raw": "{{baseUrl}}/api/v1/pendientes/sica/ingresos/busqueda", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pendientes", "sica", "ingresos", "busqueda"] }
+      },
+      "response": [
+        {
+          "name": "200 - con resultados",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/sica/ingresos/busqueda" },
+          "status": "OK", "code": 200,
+          "body": "[\n  {\n    \"id\": 503,\n    \"numeroDocumento\": \"A1234567\",\n    \"tipoDocumento\": \"PASAPORTE\",\n    \"nombresApellidos\": \"PEREZ|GOMEZ|ANA\",\n    \"fechaInscripcion\": \"20260801\",\n    \"corteId\": 121,\n    \"ultimoCorteId\": 125,\n    \"sicaReintentos\": 1\n  }\n]"
+        },
+        {
+          "name": "422 - maxReintentosPorSistema invalido (GL-PEND-SICA-ING-001)",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/sica/ingresos/busqueda" },
+          "status": "Unprocessable Entity", "code": 422,
+          "body": "{\n  \"type\": \"https://errors.example.invalid/gestion-ludopatas/gl-pend-sica-ing-001\",\n  \"title\": \"Solicitud no procesable\",\n  \"status\": 422,\n  \"code\": \"GL-PEND-SICA-ING-001\",\n  \"detail\": \"maxReintentosPorSistema debe ser mayor que cero.\",\n  \"traceId\": \"00-example-trace-id\",\n  \"timestamp\": \"2026-08-04T21:00:00Z\",\n  \"retryable\": false,\n  \"source\": \"api\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Pendientes - SICA salida",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Correlation-Id", "value": "{{correlationId}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"maxReintentosPorSistema\": 3\n}" },
+        "url": { "raw": "{{baseUrl}}/api/v1/pendientes/sica/salidas/busqueda", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pendientes", "sica", "salidas", "busqueda"] }
+      },
+      "response": [
+        {
+          "name": "200 - con resultados, campos nulos permitidos",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/sica/salidas/busqueda" },
+          "status": "OK", "code": 200,
+          "body": "[\n  {\n    \"id\": 504,\n    \"numeroDocumento\": \"00998877\",\n    \"tipoDocumento\": \"DNI\",\n    \"nombresApellidos\": null,\n    \"fechaInscripcion\": null,\n    \"corteId\": 122,\n    \"ultimoCorteId\": 126,\n    \"sicaReintentos\": 0\n  }\n]"
+        },
+        {
+          "name": "401 - sin X-Api-Key (GL-AUTH-001)",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/v1/pendientes/sica/salidas/busqueda" },
+          "status": "Unauthorized", "code": 401,
+          "body": "{\n  \"type\": \"https://errors.example.invalid/gestion-ludopatas/gl-auth-001\",\n  \"title\": \"Autenticación requerida\",\n  \"status\": 401,\n  \"code\": \"GL-AUTH-001\",\n  \"detail\": \"Autenticación requerida.\",\n  \"traceId\": \"00-example-trace-id\",\n  \"timestamp\": \"2026-08-04T21:00:00Z\",\n  \"retryable\": false,\n  \"source\": \"api\"\n}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+# Fase 1 usa DB_CONNECTION_STRING/API_KEY; Fase 2 resuelve ambos desde Vault.
+# El .env real no se versiona. En Fase 2, retirar DB_CONNECTION_STRING y API_KEY del
+# .env remoto tras confirmar el arranque con Vault; no dejar secretos con fallback.
+services:
+  gestion-ludopatas-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gestion-ludopatas-api:dev
+    container_name: gestion_ludopatas_api
+    restart: unless-stopped
+    ports:
+      - "9012:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__BdAutobot: ${DB_CONNECTION_STRING:-}
+      Seguridad__ApiKey: ${API_KEY:-}
+      Seguridad__IpsPermitidas__0: ${UIPATH_IP_ALLOWLIST:-}
+      Seguridad__IpsPermitidas__1: ${OPERADOR_IP_ALLOWLIST:-}
+      Vault__Habilitado: ${VAULT_HABILITADO:-false}
+      Vault__Address: ${VAULT_ADDRESS:-}
+      Vault__Token: ${VAULT_TOKEN:-}
+      Vault__PathDb: ${VAULT_PATH_DB:-}
+      Vault__PathApiKey: ${VAULT_PATH_APIKEY:-}
+      Vault__RutaCaInterna: ${VAULT_CA_FILE:-}
+      SqlServer__TrustServerCertificate: ${SQLSERVER_TRUST_SERVER_CERTIFICATE:-false}

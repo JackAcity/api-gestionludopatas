@@ -1,0 +1,2399 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: Gestión de Ludópatas — API SQL propuesta
+  version: "0.2.0-propuesta"
+  summary: Contrato TO-BE para exponer ocho Stored Procedures AS-BUILT mediante HTTP.
+  description: 'Especificación TO-BE versión 0.2.0-propuesta, alineada con PROPUESTA_CONTRATO_API_SQL_GestionLudopatas.md
+    y MATRIZ_MAPEO_ERRORES_SQL_HTTP.md. Los endpoints no están implementados ni aprobados. Fuente técnica AS-BUILT: scripts
+    SQL vigentes para SQL Server 2019 y bd_autobot.'
+  license:
+    name: Uso interno — propuesta técnica
+servers:
+- url: https://api.example.invalid/gestion-ludopatas
+  description: URL ilustrativa no real.
+- url: https://api-{environment}.example.invalid/gestion-ludopatas
+  description: Plantilla ilustrativa no real.
+  variables:
+    environment:
+      default: dev
+      enum:
+      - dev
+      - qa
+      - prod
+tags:
+- name: Cortes
+  description: Operaciones propuestas sobre la resolución y creación de cortes.
+- name: Pendientes CALIMACO
+  description: Consultas propuestas de pendientes CALIMACO.
+- name: Pendientes CMP
+  description: Consultas propuestas de pendientes CMP.
+- name: Pendientes SICA
+  description: Consultas propuestas de pendientes SICA.
+security:
+- OAuth2ClientCredentials:
+  - gestion-ludopatas.execute
+paths:
+  /api/v1/cortes/resoluciones-inicio:
+    post:
+      tags:
+      - Cortes
+      summary: Resolver inicio de corte
+      description: PROPUESTA TO-BE. Ejecuta la lógica AS-BUILT de dbo.SP_CORTE_ResolverInicio. Puede cerrar cortes 
+        vencidos y devuelve exactamente una resolución. Resolver y crear continúan siendo operaciones separadas y no 
+        atómicas.
+      operationId: resolverInicioCorte
+      parameters:
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/IdempotencyKeyOptional'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolverInicioRequest'
+      responses:
+        '200':
+          description: Resolución calculada.
+          headers:
+            X-Trace-Id:
+              $ref: '#/components/headers/TraceIdHeader'
+            Idempotency-Replayed:
+              $ref: '#/components/headers/IdempotencyReplayedHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResolverInicioResponse'
+              example:
+                accion: RETOMA
+                corteId: 125
+                corteColgadoOficialId:
+                corteColgadoManualId: 124
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ResolverInicioUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+        '409':
+          $ref: '#/components/responses/Conflict'
+      security:
+      - OAuth2ClientCredentials:
+        - gestion-ludopatas.execute
+      x-contract-status: proposed-to-be
+      x-sql-stored-procedure: dbo.SP_CORTE_ResolverInicio
+      x-sql-tables:
+      - dbo.Corte
+      x-sql-errors:
+      - sqlErrorNumber: 51000
+        httpStatus: 422
+        apiCode: GL-CORTE-RES-001
+        retryable: false
+      - sqlErrorNumber: 51001
+        httpStatus: 422
+        apiCode: GL-CORTE-RES-002
+        retryable: false
+      - sqlErrorNumber: 51002
+        httpStatus: 409
+        apiCode: GL-CORTE-RES-003
+        retryable: false
+      - sqlErrorNumber: 51003
+        httpStatus: 409
+        apiCode: GL-CORTE-RES-004
+        retryable: false
+      - sqlErrorNumber: 51004
+        httpStatus: 422
+        apiCode: GL-CORTE-RES-005
+        retryable: false
+      x-idempotency-proposal: optional
+      x-validation-error-codes:
+      - GL-CORTE-RES-001
+      - GL-CORTE-RES-002
+      - GL-CORTE-RES-005
+      x-validation-precedence: global x-validation-precedence applies
+  /api/v1/cortes:
+    post:
+      tags:
+      - Cortes
+      summary: Crear corte
+      description: PROPUESTA TO-BE. Ejecuta dbo.SP_CORTE_Crear. El SP AS-BUILT no es idempotente; por ello el contrato 
+        propuesto exige Idempotency-Key en la capa API.
+      operationId: crearCorte
+      parameters:
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearCorteRequest'
+      responses:
+        '201':
+          description: Corte creado.
+          headers:
+            X-Trace-Id:
+              $ref: '#/components/headers/TraceIdHeader'
+            Idempotency-Replayed:
+              $ref: '#/components/headers/IdempotencyReplayedHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrearCorteResponse'
+              example:
+                corteId: 126
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/CrearCorteUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+        '409':
+          $ref: '#/components/responses/Conflict'
+      security:
+      - OAuth2ClientCredentials:
+        - gestion-ludopatas.execute
+      x-contract-status: proposed-to-be
+      x-sql-stored-procedure: dbo.SP_CORTE_Crear
+      x-sql-tables:
+      - dbo.Corte
+      x-sql-errors:
+      - sqlErrorNumber: 51010
+        httpStatus: 422
+        apiCode: GL-CORTE-CRE-001
+        retryable: false
+      - sqlErrorNumber: 51011
+        httpStatus: 422
+        apiCode: GL-CORTE-CRE-002
+        retryable: false
+      - sqlErrorNumber: 51012
+        httpStatus: 422
+        apiCode: GL-CORTE-CRE-003
+        retryable: false
+      - sqlErrorNumber: 51013
+        httpStatus: 422
+        apiCode: GL-CORTE-CRE-004
+        retryable: false
+      x-idempotency-proposal: required
+      x-validation-error-codes:
+      - GL-CORTE-CRE-001
+      - GL-CORTE-CRE-002
+      - GL-CORTE-CRE-003
+      - GL-CORTE-CRE-004
+      x-validation-precedence: global x-validation-precedence applies
+  /api/v1/pendientes/calimaco/ingresos/busqueda:
+    post:
+      tags:
+      - Pendientes CALIMACO
+      summary: Buscar pendientes CALIMACO ingreso
+      description: PROPUESTA TO-BE. Ejecuta dbo.SP_Pendientes_CALIMACO_Ingreso. El SP es de solo lectura, devuelve 0..N 
+        filas, no aplica ORDER BY y no reserva las filas seleccionadas. Una colección vacía se responde como HTTP 200 
+        con [].
+      operationId: buscarPendientesCalimacoIngreso
+      parameters:
+      - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PendientesConCorteRequest'
+      responses:
+        '200':
+          description: Colección de pendientes; puede estar vacía.
+          headers:
+            X-Trace-Id:
+              $ref: '#/components/headers/TraceIdHeader'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendienteCalimacoItem'
+              example:
+              - id: 501
+                numeroDocumento: '00123456'
+                tipoDocumento: DNI
+                corteId: 120
+                ultimoCorteId: 125
+                calimacoUltimoCorteId: 124
+                calimacoReintentos: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/PendientesCalimacoIngresoUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+      security:
+      - OAuth2ClientCredentials:
+        - gestion-ludopatas.execute
+      x-contract-status: proposed-to-be
+      x-sql-stored-procedure: dbo.SP_Pendientes_CALIMACO_Ingreso
+      x-sql-tables:
+      - dbo.bitacora_transacciones
+      x-sql-errors:
+      - sqlErrorNumber: 51100
+        httpStatus: 422
+        apiCode: GL-PEND-CAL-ING-001
+        retryable: false
+      - sqlErrorNumber: 51101
+        httpStatus: 422
+        apiCode: GL-PEND-CAL-ING-002
+        retryable: false
+      - sqlErrorNumber: 51102
+        httpStatus: 422
+        apiCode: GL-PEND-CAL-ING-003
+        retryable: false
+      x-idempotency-proposal: none
+      x-validation-error-codes:
+      - GL-PEND-CAL-ING-001
+      - GL-PEND-CAL-ING-002
+      - GL-PEND-CAL-ING-003
+      x-validation-precedence: global x-validation-precedence applies
+  /api/v1/pendientes/calimaco/salidas/busqueda:
+    post:
+      tags:
+      - Pendientes CALIMACO
+      summary: Buscar pendientes CALIMACO salida
+      description: PROPUESTA TO-BE. Ejecuta dbo.SP_Pendientes_CALIMACO_Salida. El SP es de solo lectura, devuelve 0..N 
+        filas, no aplica ORDER BY y no reserva las filas seleccionadas. Una colección vacía se responde como HTTP 200 
+        con [].
+      operationId: buscarPendientesCalimacoSalida
+      parameters:
+      - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PendientesConCorteRequest'
+      responses:
+        '200':
+          description: Colección de pendientes; puede estar vacía.
+          headers:
+            X-Trace-Id:
+              $ref: '#/components/headers/TraceIdHeader'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendienteCalimacoItem'
+              example:
+              - id: 501
+                numeroDocumento: '00123456'
+                tipoDocumento: DNI
+                corteId: 120
+                ultimoCorteId: 125
+                calimacoUltimoCorteId: 124
+                calimacoReintentos: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/PendientesCalimacoSalidaUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+      security:
+      - OAuth2ClientCredentials:
+        - gestion-ludopatas.execute
+      x-contract-status: proposed-to-be
+      x-sql-stored-procedure: dbo.SP_Pendientes_CALIMACO_Salida
+      x-sql-tables:
+      - dbo.bitacora_transacciones
+      x-sql-errors:
+      - sqlErrorNumber: 51110
+        httpStatus: 422
+        apiCode: GL-PEND-CAL-SAL-001
+        retryable: false
+      - sqlErrorNumber: 51111
+        httpStatus: 422
+        apiCode: GL-PEND-CAL-SAL-002
+        retryable: false
+      - sqlErrorNumber: 51112
+        httpStatus: 422
+        apiCode: GL-PEND-CAL-SAL-003
+        retryable: false
+      x-idempotency-proposal: none
+      x-validation-error-codes:
+      - GL-PEND-CAL-SAL-001
+      - GL-PEND-CAL-SAL-002
+      - GL-PEND-CAL-SAL-003
+      x-validation-precedence: global x-validation-precedence applies
+  /api/v1/pendientes/cmp/ingresos/busqueda:
+    post:
+      tags:
+      - Pendientes CMP
+      summary: Buscar pendientes CMP ingreso
+      description: PROPUESTA TO-BE. Ejecuta dbo.SP_Pendientes_CMP_Ingreso. El SP es de solo lectura, devuelve 0..N 
+        filas, no aplica ORDER BY y no reserva las filas seleccionadas. Una colección vacía se responde como HTTP 200 
+        con [].
+      operationId: buscarPendientesCmpIngreso
+      parameters:
+      - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PendientesConCorteRequest'
+      responses:
+        '200':
+          description: Colección de pendientes; puede estar vacía.
+          headers:
+            X-Trace-Id:
+              $ref: '#/components/headers/TraceIdHeader'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendienteCmpItem'
+              example:
+              - id: 502
+                numeroDocumento: CE-009981
+                tipoDocumento: CARNET_EXTRANJERIA
+                corteId: 121
+                ultimoCorteId: 125
+                cmpUltimoCorteId:
+                cmpReintentos: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/PendientesCmpIngresoUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+      security:
+      - OAuth2ClientCredentials:
+        - gestion-ludopatas.execute
+      x-contract-status: proposed-to-be
+      x-sql-stored-procedure: dbo.SP_Pendientes_CMP_Ingreso
+      x-sql-tables:
+      - dbo.bitacora_transacciones
+      x-sql-errors:
+      - sqlErrorNumber: 51120
+        httpStatus: 422
+        apiCode: GL-PEND-CMP-ING-001
+        retryable: false
+      - sqlErrorNumber: 51121
+        httpStatus: 422
+        apiCode: GL-PEND-CMP-ING-002
+        retryable: false
+      - sqlErrorNumber: 51122
+        httpStatus: 422
+        apiCode: GL-PEND-CMP-ING-003
+        retryable: false
+      x-idempotency-proposal: none
+      x-validation-error-codes:
+      - GL-PEND-CMP-ING-001
+      - GL-PEND-CMP-ING-002
+      - GL-PEND-CMP-ING-003
+      x-validation-precedence: global x-validation-precedence applies
+  /api/v1/pendientes/cmp/salidas/busqueda:
+    post:
+      tags:
+      - Pendientes CMP
+      summary: Buscar pendientes CMP salida
+      description: PROPUESTA TO-BE. Ejecuta dbo.SP_Pendientes_CMP_Salida. El SP es de solo lectura, devuelve 0..N filas,
+        no aplica ORDER BY y no reserva las filas seleccionadas. Una colección vacía se responde como HTTP 200 con [].
+      operationId: buscarPendientesCmpSalida
+      parameters:
+      - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PendientesConCorteRequest'
+      responses:
+        '200':
+          description: Colección de pendientes; puede estar vacía.
+          headers:
+            X-Trace-Id:
+              $ref: '#/components/headers/TraceIdHeader'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendienteCmpItem'
+              example:
+              - id: 502
+                numeroDocumento: CE-009981
+                tipoDocumento: CARNET_EXTRANJERIA
+                corteId: 121
+                ultimoCorteId: 125
+                cmpUltimoCorteId:
+                cmpReintentos: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/PendientesCmpSalidaUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+      security:
+      - OAuth2ClientCredentials:
+        - gestion-ludopatas.execute
+      x-contract-status: proposed-to-be
+      x-sql-stored-procedure: dbo.SP_Pendientes_CMP_Salida
+      x-sql-tables:
+      - dbo.bitacora_transacciones
+      x-sql-errors:
+      - sqlErrorNumber: 51130
+        httpStatus: 422
+        apiCode: GL-PEND-CMP-SAL-001
+        retryable: false
+      - sqlErrorNumber: 51131
+        httpStatus: 422
+        apiCode: GL-PEND-CMP-SAL-002
+        retryable: false
+      - sqlErrorNumber: 51132
+        httpStatus: 422
+        apiCode: GL-PEND-CMP-SAL-003
+        retryable: false
+      x-idempotency-proposal: none
+      x-validation-error-codes:
+      - GL-PEND-CMP-SAL-001
+      - GL-PEND-CMP-SAL-002
+      - GL-PEND-CMP-SAL-003
+      x-validation-precedence: global x-validation-precedence applies
+  /api/v1/pendientes/sica/ingresos/busqueda:
+    post:
+      tags:
+      - Pendientes SICA
+      summary: Buscar pendientes SICA ingreso
+      description: PROPUESTA TO-BE. Ejecuta dbo.SP_Pendientes_SICA_Ingreso. El SP es de solo lectura, devuelve 0..N 
+        filas, no aplica ORDER BY y no reserva las filas seleccionadas. Una colección vacía se responde como HTTP 200 
+        con [].
+      operationId: buscarPendientesSicaIngreso
+      parameters:
+      - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PendientesSicaRequest'
+      responses:
+        '200':
+          description: Colección de pendientes; puede estar vacía.
+          headers:
+            X-Trace-Id:
+              $ref: '#/components/headers/TraceIdHeader'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendienteSicaIngresoItem'
+              example:
+              - id: 503
+                numeroDocumento: A1234567
+                tipoDocumento: PASAPORTE
+                nombresApellidos: PEREZ|GOMEZ|ANA
+                fechaInscripcion: '20260801'
+                corteId: 121
+                ultimoCorteId: 125
+                sicaReintentos: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/PendientesSicaIngresoUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+      security:
+      - OAuth2ClientCredentials:
+        - gestion-ludopatas.execute
+      x-contract-status: proposed-to-be
+      x-sql-stored-procedure: dbo.SP_Pendientes_SICA_Ingreso
+      x-sql-tables:
+      - dbo.bitacora_transacciones
+      x-sql-errors:
+      - sqlErrorNumber: 51140
+        httpStatus: 422
+        apiCode: GL-PEND-SICA-ING-001
+        retryable: false
+      x-idempotency-proposal: none
+      x-validation-error-codes:
+      - GL-PEND-SICA-ING-001
+      x-validation-precedence: global x-validation-precedence applies
+  /api/v1/pendientes/sica/salidas/busqueda:
+    post:
+      tags:
+      - Pendientes SICA
+      summary: Buscar pendientes SICA salida
+      description: PROPUESTA TO-BE. Ejecuta dbo.SP_Pendientes_SICA_Salida. El SP es de solo lectura, devuelve 0..N 
+        filas, no aplica ORDER BY y no reserva las filas seleccionadas. Una colección vacía se responde como HTTP 200 
+        con [].
+      operationId: buscarPendientesSicaSalida
+      parameters:
+      - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PendientesSicaRequest'
+      responses:
+        '200':
+          description: Colección de pendientes; puede estar vacía.
+          headers:
+            X-Trace-Id:
+              $ref: '#/components/headers/TraceIdHeader'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendienteSicaSalidaItem'
+              example:
+              - id: 503
+                numeroDocumento: A1234567
+                tipoDocumento: PASAPORTE
+                nombresApellidos:
+                fechaInscripcion:
+                corteId: 121
+                ultimoCorteId: 125
+                sicaReintentos: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/PendientesSicaSalidaUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+      security:
+      - OAuth2ClientCredentials:
+        - gestion-ludopatas.execute
+      x-contract-status: proposed-to-be
+      x-sql-stored-procedure: dbo.SP_Pendientes_SICA_Salida
+      x-sql-tables:
+      - dbo.bitacora_transacciones
+      x-sql-errors:
+      - sqlErrorNumber: 51150
+        httpStatus: 422
+        apiCode: GL-PEND-SICA-SAL-001
+        retryable: false
+      x-idempotency-proposal: none
+      x-validation-error-codes:
+      - GL-PEND-SICA-SAL-001
+      x-validation-precedence: global x-validation-precedence applies
+components:
+  securitySchemes:
+    OAuth2ClientCredentials:
+      type: oauth2
+      description: 'PROPUESTA recomendada para UiPath → API: OAuth 2.0 Client Credentials con identidad técnica por ambiente
+        y scopes mínimos.'
+      flows:
+        clientCredentials:
+          tokenUrl: https://identity.example.invalid/oauth2/token
+          scopes:
+            gestion-ludopatas.execute: Ejecutar las operaciones propuestas de cortes y pendientes.
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: PROPUESTA alternativa NO ACTIVA en esta especificación. Se conserva solo para análisis comparativo; 
+        ninguna operación la acepta. Requeriría aprobación, rotación, almacenamiento seguro, restricción por red y 
+        monitoreo.
+      x-active: false
+      x-contract-status: alternative-not-active
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      description: Identificador opcional enviado por UiPath. La API debe generar uno cuando no se reciba.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+      example: uipath-job-20260804-000126
+    IdempotencyKeyRequired:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: PROPUESTA obligatoria para crear cortes. Debe ser única por intención de negocio y ambiente durante 
+        la vigencia configurada.
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 128
+      example: cut-20260805-0700-official-job-84219
+    IdempotencyKeyOptional:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: PROPUESTA opcional para repetir de forma consistente la respuesta de resolver inicio ante un timeout 
+        del cliente.
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 128
+      example: resolve-start-job-84219-attempt-1
+  headers:
+    TraceIdHeader:
+      description: Identificador de trazabilidad de la respuesta.
+      schema:
+        type: string
+      example: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+    IdempotencyReplayedHeader:
+      description: true cuando la respuesta fue reproducida desde el registro de idempotencia propuesto.
+      schema:
+        type: boolean
+      example: true
+    WWWAuthenticateHeader:
+      description: Desafío OAuth 2.0 Bearer para autenticación ausente, inválida o expirada.
+      schema:
+        type: string
+      example: Bearer realm="gestion-ludopatas", error="invalid_token"
+  schemas:
+    ApiError:
+      type: object
+      description: Modelo común TO-BE para errores funcionales y técnicos. No expone stack trace, consultas, 
+        credenciales ni detalles sensibles del motor.
+      required:
+      - type
+      - title
+      - status
+      - code
+      - detail
+      - traceId
+      - timestamp
+      - retryable
+      - source
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI estable que identifica la familia del error.
+        title:
+          type: string
+          description: Resumen humano estable del error.
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+          description: Código HTTP de la respuesta.
+        code:
+          type: string
+          pattern: ^GL-[A-Z0-9-]+$
+          description: Código funcional/técnico estable de la API.
+        detail:
+          type: string
+          description: Detalle seguro para el consumidor; no incluye información sensible.
+        traceId:
+          type: string
+          minLength: 1
+          description: Identificador de trazabilidad extremo a extremo. Debe correlacionar UiPath, API y logs internos.
+        timestamp:
+          type: string
+          format: date-time
+          description: Fecha y hora de generación del error en formato RFC 3339.
+        retryable:
+          type: boolean
+          description: Indica si el cliente puede considerar un reintento técnico controlado.
+        source:
+          type: string
+          enum:
+          - api
+          - sql
+          - security
+          - network
+          description: Capa que clasificó el error; no revela componentes internos innecesarios.
+        sqlErrorNumber:
+          type:
+          - integer
+          - 'null'
+          description: Número SQL controlado, incluido solo cuando es seguro y útil para soporte.
+          minimum: 1
+          format: int32
+          maximum: 2147483647
+        violations:
+          type:
+          - array
+          - 'null'
+          description: Errores de validación por campo, cuando corresponda.
+          items:
+            type: object
+            required:
+            - field
+            - message
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+      example:
+        type: https://errors.example.invalid/gestion-ludopatas/gl-corte-cre-002
+        title: Solicitud no procesable
+        status: 422
+        code: GL-CORTE-CRE-002
+        detail: fechaHoraCorte es obligatoria para un corte oficial.
+        traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+        timestamp: '2026-08-04T21:00:00-05:00'
+        retryable: false
+        source: sql
+    ResolverInicioRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - fechaHoraEvaluacion
+      - timeoutMinutos
+      properties:
+        fechaHoraEvaluacion:
+          type: string
+          format: date-time
+          description: Mapea a @FechaHoraEvaluacion DATETIME. La política de conversión de zona horaria debe definirse 
+            en la API.
+        timeoutMinutos:
+          type: integer
+          minimum: 0
+          description: Mapea a @TimeoutMinutos INT.
+          x-sql-parameter: '@TimeoutMinutos'
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+      example:
+        fechaHoraEvaluacion: '2026-08-04T21:00:00-05:00'
+        timeoutMinutos: 30
+    ResolverInicioResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - accion
+      - corteId
+      - corteColgadoOficialId
+      - corteColgadoManualId
+      properties:
+        accion:
+          type: string
+          enum:
+          - SIN_RETOMA
+          - RETOMA
+          - COLGADO_CERRADO
+          x-sql-name: accion
+          x-sql-type: VARCHAR(20)
+        corteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        corteColgadoOficialId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: corte_colgado_oficial_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        corteColgadoManualId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: corte_colgado_manual_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+      example:
+        accion: RETOMA
+        corteId: 125
+        corteColgadoOficialId:
+        corteColgadoManualId: 124
+    CrearCorteRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - tipoCorte
+      - fechaHoraEjecucion
+      properties:
+        tipoCorte:
+          type: string
+          enum:
+          - oficial
+          - manual
+          maxLength: 10
+          x-sql-parameter: '@TipoCorte'
+          x-sql-type: VARCHAR(10)
+        fechaHoraCorte:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-sql-parameter: '@FechaHoraCorte'
+          x-sql-type: DATETIME
+          description: Obligatoria para oficial; omitida o null para manual.
+        fechaHoraEjecucion:
+          type: string
+          format: date-time
+          x-sql-parameter: '@FechaHoraEjecucion'
+          x-sql-type: DATETIME
+      oneOf:
+      - properties:
+          tipoCorte:
+            const: oficial
+          fechaHoraCorte:
+            type: string
+            format: date-time
+        required:
+        - fechaHoraCorte
+      - properties:
+          tipoCorte:
+            const: manual
+          fechaHoraCorte:
+            type: 'null'
+      examples:
+      - tipoCorte: oficial
+        fechaHoraCorte: '2026-08-05T07:00:00-05:00'
+        fechaHoraEjecucion: '2026-08-05T07:02:10-05:00'
+      - tipoCorte: manual
+        fechaHoraCorte:
+        fechaHoraEjecucion: '2026-08-05T08:12:00-05:00'
+    CrearCorteResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - corteId
+      properties:
+        corteId:
+          type: integer
+          minimum: 1
+          x-sql-name: corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+      example:
+        corteId: 126
+    PendientesConCorteRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - corteIdActual
+      - maxReintentosPorSistema
+      properties:
+        corteIdActual:
+          type: integer
+          minimum: 1
+          x-sql-parameter: '@corte_id_actual'
+          x-sql-type: INT
+          description: El SP solo valida que sea positivo; no comprueba existencia en dbo.Corte.
+          format: int32
+          maximum: 2147483647
+        maxReintentosPorSistema:
+          type: integer
+          minimum: 1
+          x-sql-parameter: '@MaxReintentosPorSistema'
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        esReintentoForzado:
+          type: boolean
+          default: false
+          x-sql-parameter: '@in_EsReintentoForzado'
+          x-sql-type: BIT
+          description: Solo omite el filtro de último corte; no omite vigencia, estados ni techo de reintentos.
+      example:
+        corteIdActual: 126
+        maxReintentosPorSistema: 3
+        esReintentoForzado: false
+    PendientesSicaRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - maxReintentosPorSistema
+      properties:
+        maxReintentosPorSistema:
+          type: integer
+          minimum: 1
+          x-sql-parameter: '@MaxReintentosPorSistema'
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+      example:
+        maxReintentosPorSistema: 3
+    PendienteCalimacoItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - numeroDocumento
+      - tipoDocumento
+      - corteId
+      - ultimoCorteId
+      - calimacoUltimoCorteId
+      - calimacoReintentos
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          x-sql-name: id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        numeroDocumento:
+          type: string
+          maxLength: 20
+          x-sql-name: numero_documento
+          x-sql-type: VARCHAR(20)
+        tipoDocumento:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          x-sql-name: tipo_documento
+          x-sql-type: VARCHAR(20)
+        corteId:
+          type: integer
+          minimum: 1
+          x-sql-name: corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        ultimoCorteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: ultimo_corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        calimacoUltimoCorteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: calimaco_ultimo_corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        calimacoReintentos:
+          type:
+          - integer
+          - 'null'
+          x-sql-name: calimaco_reintentos
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+      example:
+        id: 501
+        numeroDocumento: '00123456'
+        tipoDocumento: DNI
+        corteId: 120
+        ultimoCorteId: 125
+        calimacoUltimoCorteId: 124
+        calimacoReintentos: 1
+    PendienteCmpItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - numeroDocumento
+      - tipoDocumento
+      - corteId
+      - ultimoCorteId
+      - cmpUltimoCorteId
+      - cmpReintentos
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          x-sql-name: id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        numeroDocumento:
+          type: string
+          maxLength: 20
+          x-sql-name: numero_documento
+          x-sql-type: VARCHAR(20)
+        tipoDocumento:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          x-sql-name: tipo_documento
+          x-sql-type: VARCHAR(20)
+        corteId:
+          type: integer
+          minimum: 1
+          x-sql-name: corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        ultimoCorteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: ultimo_corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        cmpUltimoCorteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: cmp_ultimo_corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        cmpReintentos:
+          type:
+          - integer
+          - 'null'
+          x-sql-name: cmp_reintentos
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+      example:
+        id: 502
+        numeroDocumento: CE-009981
+        tipoDocumento: CARNET_EXTRANJERIA
+        corteId: 121
+        ultimoCorteId: 125
+        cmpUltimoCorteId:
+        cmpReintentos: 0
+    PendienteSicaIngresoItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - numeroDocumento
+      - tipoDocumento
+      - nombresApellidos
+      - fechaInscripcion
+      - corteId
+      - ultimoCorteId
+      - sicaReintentos
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          x-sql-name: id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        numeroDocumento:
+          type: string
+          maxLength: 20
+          x-sql-name: numero_documento
+          x-sql-type: VARCHAR(20)
+        tipoDocumento:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          x-sql-name: tipo_documento
+          x-sql-type: VARCHAR(20)
+        nombresApellidos:
+          type: string
+          maxLength: 150
+          x-sql-name: nombres_apellidos
+          x-sql-type: VARCHAR(150)
+        fechaInscripcion:
+          type:
+          - string
+          - 'null'
+          maxLength: 8
+          description: Texto SQL de hasta 8 caracteres; el DDL no impone patrón de fecha.
+          x-sql-name: fecha_inscripcion
+          x-sql-type: VARCHAR(8)
+        corteId:
+          type: integer
+          minimum: 1
+          x-sql-name: corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        ultimoCorteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: ultimo_corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        sicaReintentos:
+          type:
+          - integer
+          - 'null'
+          x-sql-name: sica_reintentos
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+      example:
+        id: 503
+        numeroDocumento: A1234567
+        tipoDocumento: PASAPORTE
+        nombresApellidos: PEREZ|GOMEZ|ANA
+        fechaInscripcion: '20260801'
+        corteId: 121
+        ultimoCorteId: 125
+        sicaReintentos: 1
+      description: Fila AS-BUILT de dbo.SP_Pendientes_SICA_Ingreso. nombresApellidos es una propiedad obligatoria y no 
+        anulable, porque el Stored Procedure filtra nombres_apellidos IS NOT NULL.
+    PendienteSicaSalidaItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - numeroDocumento
+      - tipoDocumento
+      - nombresApellidos
+      - fechaInscripcion
+      - corteId
+      - ultimoCorteId
+      - sicaReintentos
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          x-sql-name: id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        numeroDocumento:
+          type: string
+          maxLength: 20
+          x-sql-name: numero_documento
+          x-sql-type: VARCHAR(20)
+        tipoDocumento:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          x-sql-name: tipo_documento
+          x-sql-type: VARCHAR(20)
+        nombresApellidos:
+          type:
+          - string
+          - 'null'
+          maxLength: 150
+          x-sql-name: nombres_apellidos
+          x-sql-type: VARCHAR(150)
+        fechaInscripcion:
+          type:
+          - string
+          - 'null'
+          maxLength: 8
+          description: Texto SQL de hasta 8 caracteres; el DDL no impone patrón de fecha.
+          x-sql-name: fecha_inscripcion
+          x-sql-type: VARCHAR(8)
+        corteId:
+          type: integer
+          minimum: 1
+          x-sql-name: corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        ultimoCorteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: ultimo_corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        sicaReintentos:
+          type:
+          - integer
+          - 'null'
+          x-sql-name: sica_reintentos
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+      example:
+        id: 503
+        numeroDocumento: A1234567
+        tipoDocumento: PASAPORTE
+        nombresApellidos:
+        fechaInscripcion:
+        corteId: 121
+        ultimoCorteId: 125
+        sicaReintentos: 1
+      description: Fila AS-BUILT de dbo.SP_Pendientes_SICA_Salida. nombresApellidos es una propiedad obligatoria del 
+        ResultSet, pero su valor puede ser null.
+    Corte:
+      type: object
+      description: Representación de datos derivada de dbo.Corte. Es un schema documental; no implica CRUD HTTP.
+      required:
+      - id
+      - tipoCorte
+      - fechaHoraCorte
+      - fechaHoraEjecucion
+      - fechaFinEjecucion
+      - extraccionPdf
+      - totalPaginas
+      - totalRegistrosExtraidos
+      - totalNewSica
+      - totalRemovedSica
+      - totalItemsQueue
+      - estadoGlobalCorte
+      - usuarioRegistro
+      - fechaRegistro
+      - usuarioModificacion
+      - fechaModificacion
+      - usuarioEliminacion
+      - fechaEliminacion
+      - hostname
+      - ip
+      - flgPersistente
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          x-sql-name: id
+          x-sql-type: INT IDENTITY(1,1)
+          format: int32
+          maximum: 2147483647
+        tipoCorte:
+          type: string
+          maxLength: 10
+          x-sql-name: tipo_corte
+          x-sql-type: VARCHAR(10)
+        fechaHoraCorte:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-sql-name: fecha_hora_corte
+          x-sql-type: DATETIME
+        fechaHoraEjecucion:
+          type: string
+          format: date-time
+          x-sql-name: fecha_hora_ejecucion
+          x-sql-type: DATETIME
+        fechaFinEjecucion:
+          type: string
+          format: date-time
+          x-sql-name: fecha_fin_ejecucion
+          x-sql-type: DATETIME
+        extraccionPdf:
+          type: string
+          maxLength: 10
+          x-sql-name: extraccion_PDF
+          x-sql-type: VARCHAR(10)
+        totalPaginas:
+          type: integer
+          x-sql-name: total_paginas
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+        totalRegistrosExtraidos:
+          type: integer
+          x-sql-name: total_registros_extraidos
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+        totalNewSica:
+          type: integer
+          x-sql-name: total_new_sica
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+        totalRemovedSica:
+          type: integer
+          x-sql-name: total_removed_sica
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+        totalItemsQueue:
+          type: integer
+          x-sql-name: total_items_queue
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+        estadoGlobalCorte:
+          type: string
+          maxLength: 20
+          x-sql-name: estado_global_corte
+          x-sql-type: VARCHAR(20)
+        usuarioRegistro:
+          type: string
+          maxLength: 30
+          x-sql-name: usuario_registro
+          x-sql-type: VARCHAR(30)
+        fechaRegistro:
+          type: string
+          format: date-time
+          x-sql-name: fecha_registro
+          x-sql-type: DATETIME
+        usuarioModificacion:
+          type:
+          - string
+          - 'null'
+          maxLength: 30
+          x-sql-name: usuario_modificacion
+          x-sql-type: VARCHAR(30)
+        fechaModificacion:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-sql-name: fecha_modificacion
+          x-sql-type: DATETIME
+        usuarioEliminacion:
+          type: string
+          maxLength: 30
+          x-sql-name: usuario_eliminacion
+          x-sql-type: VARCHAR(30)
+        fechaEliminacion:
+          type: string
+          format: date-time
+          x-sql-name: fecha_eliminacion
+          x-sql-type: DATETIME
+        hostname:
+          type: string
+          maxLength: 50
+          x-sql-name: hostname
+          x-sql-type: VARCHAR(50)
+        ip:
+          type: string
+          maxLength: 30
+          x-sql-name: ip
+          x-sql-type: VARCHAR(30)
+        flgPersistente:
+          type: boolean
+          x-sql-name: flg_persistente
+          x-sql-type: BIT
+      x-sql-table: dbo.Corte
+    BitacoraTransacciones:
+      type: object
+      description: Representación de datos derivada de dbo.bitacora_transacciones. Es un schema documental; no implica 
+        CRUD HTTP.
+      required:
+      - id
+      - corteId
+      - ultimoCorteId
+      - referencia
+      - numeroDocumento
+      - tipoDocumento
+      - nombresApellidos
+      - fechaInscripcion
+      - flujoProcesar
+      - sicaEstado
+      - sicaError
+      - sicaReintentos
+      - sicaUltimoIntento
+      - calimacoEstado
+      - calimacoError
+      - calimacoReintentos
+      - calimacoUltimoIntento
+      - calimacoUltimoCorteId
+      - cmpEstado
+      - cmpError
+      - cmpReintentos
+      - cmpUltimoIntento
+      - cmpUltimoCorteId
+      - estadoGlobal
+      - motivoInvalidoCodigo
+      - motivoInvalidoDetalle
+      - esVigente
+      - usuarioRegistro
+      - fechaRegistro
+      - usuarioModificacion
+      - fechaModificacion
+      - usuarioEliminacion
+      - fechaEliminacion
+      - hostname
+      - ip
+      - flgPersistente
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          x-sql-name: id
+          x-sql-type: INT IDENTITY(1,1)
+          format: int32
+          maximum: 2147483647
+        corteId:
+          type: integer
+          minimum: 1
+          x-sql-name: corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        ultimoCorteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: ultimo_corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        referencia:
+          type:
+          - string
+          - 'null'
+          maxLength: 50
+          x-sql-name: referencia
+          x-sql-type: VARCHAR(50)
+        numeroDocumento:
+          type: string
+          maxLength: 20
+          x-sql-name: numero_documento
+          x-sql-type: VARCHAR(20)
+        tipoDocumento:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          x-sql-name: tipo_documento
+          x-sql-type: VARCHAR(20)
+        nombresApellidos:
+          type:
+          - string
+          - 'null'
+          maxLength: 150
+          x-sql-name: nombres_apellidos
+          x-sql-type: VARCHAR(150)
+        fechaInscripcion:
+          type:
+          - string
+          - 'null'
+          maxLength: 8
+          x-sql-name: fecha_inscripcion
+          x-sql-type: VARCHAR(8)
+        flujoProcesar:
+          type: string
+          maxLength: 10
+          x-sql-name: flujo_procesar
+          x-sql-type: VARCHAR(10)
+        sicaEstado:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          x-sql-name: sica_estado
+          x-sql-type: VARCHAR(20)
+        sicaError:
+          type:
+          - string
+          - 'null'
+          x-sql-name: sica_error
+          x-sql-type: VARCHAR(MAX)
+        sicaReintentos:
+          type:
+          - integer
+          - 'null'
+          x-sql-name: sica_reintentos
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+        sicaUltimoIntento:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-sql-name: sica_ultimo_intento
+          x-sql-type: DATETIME
+        calimacoEstado:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          x-sql-name: calimaco_estado
+          x-sql-type: VARCHAR(20)
+        calimacoError:
+          type:
+          - string
+          - 'null'
+          x-sql-name: calimaco_error
+          x-sql-type: VARCHAR(MAX)
+        calimacoReintentos:
+          type:
+          - integer
+          - 'null'
+          x-sql-name: calimaco_reintentos
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+        calimacoUltimoIntento:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-sql-name: calimaco_ultimo_intento
+          x-sql-type: DATETIME
+        calimacoUltimoCorteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: calimaco_ultimo_corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        cmpEstado:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          x-sql-name: cmp_estado
+          x-sql-type: VARCHAR(20)
+        cmpError:
+          type:
+          - string
+          - 'null'
+          x-sql-name: cmp_error
+          x-sql-type: VARCHAR(MAX)
+        cmpReintentos:
+          type:
+          - integer
+          - 'null'
+          x-sql-name: cmp_reintentos
+          x-sql-type: INT
+          format: int32
+          minimum: -2147483648
+          maximum: 2147483647
+        cmpUltimoIntento:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-sql-name: cmp_ultimo_intento
+          x-sql-type: DATETIME
+        cmpUltimoCorteId:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          x-sql-name: cmp_ultimo_corte_id
+          x-sql-type: INT
+          format: int32
+          maximum: 2147483647
+        estadoGlobal:
+          type: string
+          maxLength: 20
+          x-sql-name: estado_global
+          x-sql-type: VARCHAR(20)
+        motivoInvalidoCodigo:
+          type:
+          - string
+          - 'null'
+          maxLength: 30
+          x-sql-name: motivo_invalido_codigo
+          x-sql-type: VARCHAR(30)
+        motivoInvalidoDetalle:
+          type:
+          - string
+          - 'null'
+          x-sql-name: motivo_invalido_detalle
+          x-sql-type: VARCHAR(MAX)
+        esVigente:
+          type: boolean
+          x-sql-name: es_vigente
+          x-sql-type: BIT
+        usuarioRegistro:
+          type: string
+          maxLength: 30
+          x-sql-name: usuario_registro
+          x-sql-type: VARCHAR(30)
+        fechaRegistro:
+          type: string
+          format: date-time
+          x-sql-name: fecha_registro
+          x-sql-type: DATETIME
+        usuarioModificacion:
+          type:
+          - string
+          - 'null'
+          maxLength: 30
+          x-sql-name: usuario_modificacion
+          x-sql-type: VARCHAR(30)
+        fechaModificacion:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-sql-name: fecha_modificacion
+          x-sql-type: DATETIME
+        usuarioEliminacion:
+          type:
+          - string
+          - 'null'
+          maxLength: 30
+          x-sql-name: usuario_eliminacion
+          x-sql-type: VARCHAR(30)
+        fechaEliminacion:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-sql-name: fecha_eliminacion
+          x-sql-type: DATETIME
+        hostname:
+          type:
+          - string
+          - 'null'
+          maxLength: 50
+          x-sql-name: hostname
+          x-sql-type: VARCHAR(50)
+        ip:
+          type:
+          - string
+          - 'null'
+          maxLength: 30
+          x-sql-name: ip
+          x-sql-type: VARCHAR(30)
+        flgPersistente:
+          type: boolean
+          x-sql-name: flg_persistente
+          x-sql-type: BIT
+      x-sql-table: dbo.bitacora_transacciones
+  responses:
+    BadRequest:
+      description: JSON ilegible, cuerpo no deserializable o tipo JSON incompatible con el contrato.
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-001
+            title: Solicitud inválida
+            status: 400
+            code: GL-API-REQ-001
+            detail: El cuerpo de la solicitud no es válido.
+            traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+            timestamp: '2026-08-04T21:00:00-05:00'
+            retryable: false
+            source: api
+    Unauthorized:
+      description: Autenticación ausente o inválida.
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+        WWW-Authenticate:
+          $ref: '#/components/headers/WWWAuthenticateHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            type: https://errors.example.invalid/gestion-ludopatas/gl-auth-001
+            title: Autenticación requerida
+            status: 401
+            code: GL-AUTH-001
+            detail: Autenticación requerida.
+            traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+            timestamp: '2026-08-04T21:00:00-05:00'
+            retryable: false
+            source: api
+    Forbidden:
+      description: Identidad autenticada sin autorización.
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            type: https://errors.example.invalid/gestion-ludopatas/gl-auth-002
+            title: Acceso denegado
+            status: 403
+            code: GL-AUTH-002
+            detail: La identidad no está autorizada para esta operación.
+            traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+            timestamp: '2026-08-04T21:00:00-05:00'
+            retryable: false
+            source: api
+    Conflict:
+      description: Conflicto con el estado actual o con la idempotencia.
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            type: https://errors.example.invalid/gestion-ludopatas/gl-idemp-001
+            title: Conflicto
+            status: 409
+            code: GL-IDEMP-001
+            detail: La clave de idempotencia ya fue usada con otra solicitud.
+            traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+            timestamp: '2026-08-04T21:00:00-05:00'
+            retryable: false
+            source: api
+    UnprocessableEntity:
+      description: Validación de contrato sin código funcional específico. Las operaciones usan respuestas 422 
+        específicas cuando la regla replica una validación SQL.
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-002
+            title: Solicitud no procesable
+            status: 422
+            code: GL-API-REQ-002
+            detail: La solicitud no cumple las reglas del contrato.
+            traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+            timestamp: '2026-08-04T21:00:00-05:00'
+            retryable: false
+            source: api
+      x-api-codes:
+      - GL-API-REQ-002
+    InternalServerError:
+      description: Error interno no controlado.
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            type: https://errors.example.invalid/gestion-ludopatas/gl-api-unexpected-001
+            title: Error interno
+            status: 500
+            code: GL-API-UNEXPECTED-001
+            detail: Ocurrió un error interno no previsto.
+            traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+            timestamp: '2026-08-04T21:00:00-05:00'
+            retryable: false
+            source: api
+    ServiceUnavailable:
+      description: Persistencia no disponible, deadlock o configuración SQL incompatible.
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            type: https://errors.example.invalid/gestion-ludopatas/gl-sql-unavailable-001
+            title: Servicio no disponible
+            status: 503
+            code: GL-SQL-UNAVAILABLE-001
+            detail: El servicio de persistencia no está disponible.
+            traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+            timestamp: '2026-08-04T21:00:00-05:00'
+            retryable: true
+            source: sql
+    GatewayTimeout:
+      description: Timeout de persistencia.
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            type: https://errors.example.invalid/gestion-ludopatas/gl-sql-timeout-001
+            title: Tiempo de espera agotado
+            status: 504
+            code: GL-SQL-TIMEOUT-001
+            detail: La persistencia no respondió dentro del tiempo permitido.
+            traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+            timestamp: '2026-08-04T21:00:00-05:00'
+            retryable: true
+            source: sql
+    ResolverInicioUnprocessableEntity:
+      description: 'Solicitud válida a nivel JSON, pero no procesable. Precedencia normativa: si la API detecta una regla
+        que replica una validación SQL, debe devolver el código funcional específico listado en x-api-codes; GL-API-REQ-002
+        queda reservado para reglas de contrato sin código específico.'
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            gl_corte_res_001:
+              summary: GL-CORTE-RES-001 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-corte-res-001
+                title: Solicitud no procesable
+                status: 422
+                code: GL-CORTE-RES-001
+                detail: fechaHoraEvaluacion es obligatoria.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_corte_res_002:
+              summary: GL-CORTE-RES-002 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-corte-res-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-CORTE-RES-002
+                detail: timeoutMinutos debe ser mayor o igual que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_corte_res_005:
+              summary: GL-CORTE-RES-005 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-corte-res-005
+                title: Solicitud no procesable
+                status: 422
+                code: GL-CORTE-RES-005
+                detail: timeoutMinutos excede el rango permitido para la fecha indicada.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_api_req_002:
+              summary: GL-API-REQ-002 — validación contractual sin código funcional específico
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-API-REQ-002
+                detail: La solicitud no cumple las reglas del contrato.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+      x-api-codes:
+      - GL-CORTE-RES-001
+      - GL-CORTE-RES-002
+      - GL-CORTE-RES-005
+      - GL-API-REQ-002
+      x-validation-precedence: replicated-sql-validation-before-generic-contract-validation
+    CrearCorteUnprocessableEntity:
+      description: 'Solicitud válida a nivel JSON, pero no procesable. Precedencia normativa: si la API detecta una regla
+        que replica una validación SQL, debe devolver el código funcional específico listado en x-api-codes; GL-API-REQ-002
+        queda reservado para reglas de contrato sin código específico.'
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            gl_corte_cre_001:
+              summary: GL-CORTE-CRE-001 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-corte-cre-001
+                title: Solicitud no procesable
+                status: 422
+                code: GL-CORTE-CRE-001
+                detail: tipoCorte solo permite oficial o manual.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_corte_cre_002:
+              summary: GL-CORTE-CRE-002 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-corte-cre-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-CORTE-CRE-002
+                detail: fechaHoraCorte es obligatoria para un corte oficial.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_corte_cre_003:
+              summary: GL-CORTE-CRE-003 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-corte-cre-003
+                title: Solicitud no procesable
+                status: 422
+                code: GL-CORTE-CRE-003
+                detail: fechaHoraCorte debe omitirse o ser null para un corte manual.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_corte_cre_004:
+              summary: GL-CORTE-CRE-004 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-corte-cre-004
+                title: Solicitud no procesable
+                status: 422
+                code: GL-CORTE-CRE-004
+                detail: fechaHoraEjecucion es obligatoria.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_api_req_002:
+              summary: GL-API-REQ-002 — validación contractual sin código funcional específico
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-API-REQ-002
+                detail: La solicitud no cumple las reglas del contrato.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+      x-api-codes:
+      - GL-CORTE-CRE-001
+      - GL-CORTE-CRE-002
+      - GL-CORTE-CRE-003
+      - GL-CORTE-CRE-004
+      - GL-API-REQ-002
+      x-validation-precedence: replicated-sql-validation-before-generic-contract-validation
+    PendientesCalimacoIngresoUnprocessableEntity:
+      description: 'Solicitud válida a nivel JSON, pero no procesable. Precedencia normativa: si la API detecta una regla
+        que replica una validación SQL, debe devolver el código funcional específico listado en x-api-codes; GL-API-REQ-002
+        queda reservado para reglas de contrato sin código específico.'
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            gl_pend_cal_ing_001:
+              summary: GL-PEND-CAL-ING-001 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cal-ing-001
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CAL-ING-001
+                detail: corteIdActual debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_pend_cal_ing_002:
+              summary: GL-PEND-CAL-ING-002 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cal-ing-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CAL-ING-002
+                detail: maxReintentosPorSistema debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_pend_cal_ing_003:
+              summary: GL-PEND-CAL-ING-003 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cal-ing-003
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CAL-ING-003
+                detail: esReintentoForzado no puede ser null.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_api_req_002:
+              summary: GL-API-REQ-002 — validación contractual sin código funcional específico
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-API-REQ-002
+                detail: La solicitud no cumple las reglas del contrato.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+      x-api-codes:
+      - GL-PEND-CAL-ING-001
+      - GL-PEND-CAL-ING-002
+      - GL-PEND-CAL-ING-003
+      - GL-API-REQ-002
+      x-validation-precedence: replicated-sql-validation-before-generic-contract-validation
+    PendientesCalimacoSalidaUnprocessableEntity:
+      description: 'Solicitud válida a nivel JSON, pero no procesable. Precedencia normativa: si la API detecta una regla
+        que replica una validación SQL, debe devolver el código funcional específico listado en x-api-codes; GL-API-REQ-002
+        queda reservado para reglas de contrato sin código específico.'
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            gl_pend_cal_sal_001:
+              summary: GL-PEND-CAL-SAL-001 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cal-sal-001
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CAL-SAL-001
+                detail: corteIdActual debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_pend_cal_sal_002:
+              summary: GL-PEND-CAL-SAL-002 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cal-sal-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CAL-SAL-002
+                detail: maxReintentosPorSistema debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_pend_cal_sal_003:
+              summary: GL-PEND-CAL-SAL-003 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cal-sal-003
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CAL-SAL-003
+                detail: esReintentoForzado no puede ser null.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_api_req_002:
+              summary: GL-API-REQ-002 — validación contractual sin código funcional específico
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-API-REQ-002
+                detail: La solicitud no cumple las reglas del contrato.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+      x-api-codes:
+      - GL-PEND-CAL-SAL-001
+      - GL-PEND-CAL-SAL-002
+      - GL-PEND-CAL-SAL-003
+      - GL-API-REQ-002
+      x-validation-precedence: replicated-sql-validation-before-generic-contract-validation
+    PendientesCmpIngresoUnprocessableEntity:
+      description: 'Solicitud válida a nivel JSON, pero no procesable. Precedencia normativa: si la API detecta una regla
+        que replica una validación SQL, debe devolver el código funcional específico listado en x-api-codes; GL-API-REQ-002
+        queda reservado para reglas de contrato sin código específico.'
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            gl_pend_cmp_ing_001:
+              summary: GL-PEND-CMP-ING-001 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cmp-ing-001
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CMP-ING-001
+                detail: corteIdActual debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_pend_cmp_ing_002:
+              summary: GL-PEND-CMP-ING-002 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cmp-ing-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CMP-ING-002
+                detail: maxReintentosPorSistema debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_pend_cmp_ing_003:
+              summary: GL-PEND-CMP-ING-003 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cmp-ing-003
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CMP-ING-003
+                detail: esReintentoForzado no puede ser null.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_api_req_002:
+              summary: GL-API-REQ-002 — validación contractual sin código funcional específico
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-API-REQ-002
+                detail: La solicitud no cumple las reglas del contrato.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+      x-api-codes:
+      - GL-PEND-CMP-ING-001
+      - GL-PEND-CMP-ING-002
+      - GL-PEND-CMP-ING-003
+      - GL-API-REQ-002
+      x-validation-precedence: replicated-sql-validation-before-generic-contract-validation
+    PendientesCmpSalidaUnprocessableEntity:
+      description: 'Solicitud válida a nivel JSON, pero no procesable. Precedencia normativa: si la API detecta una regla
+        que replica una validación SQL, debe devolver el código funcional específico listado en x-api-codes; GL-API-REQ-002
+        queda reservado para reglas de contrato sin código específico.'
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            gl_pend_cmp_sal_001:
+              summary: GL-PEND-CMP-SAL-001 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cmp-sal-001
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CMP-SAL-001
+                detail: corteIdActual debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_pend_cmp_sal_002:
+              summary: GL-PEND-CMP-SAL-002 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cmp-sal-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CMP-SAL-002
+                detail: maxReintentosPorSistema debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_pend_cmp_sal_003:
+              summary: GL-PEND-CMP-SAL-003 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-cmp-sal-003
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-CMP-SAL-003
+                detail: esReintentoForzado no puede ser null.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_api_req_002:
+              summary: GL-API-REQ-002 — validación contractual sin código funcional específico
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-API-REQ-002
+                detail: La solicitud no cumple las reglas del contrato.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+      x-api-codes:
+      - GL-PEND-CMP-SAL-001
+      - GL-PEND-CMP-SAL-002
+      - GL-PEND-CMP-SAL-003
+      - GL-API-REQ-002
+      x-validation-precedence: replicated-sql-validation-before-generic-contract-validation
+    PendientesSicaIngresoUnprocessableEntity:
+      description: 'Solicitud válida a nivel JSON, pero no procesable. Precedencia normativa: si la API detecta una regla
+        que replica una validación SQL, debe devolver el código funcional específico listado en x-api-codes; GL-API-REQ-002
+        queda reservado para reglas de contrato sin código específico.'
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            gl_pend_sica_ing_001:
+              summary: GL-PEND-SICA-ING-001 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-sica-ing-001
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-SICA-ING-001
+                detail: maxReintentosPorSistema debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_api_req_002:
+              summary: GL-API-REQ-002 — validación contractual sin código funcional específico
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-API-REQ-002
+                detail: La solicitud no cumple las reglas del contrato.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+      x-api-codes:
+      - GL-PEND-SICA-ING-001
+      - GL-API-REQ-002
+      x-validation-precedence: replicated-sql-validation-before-generic-contract-validation
+    PendientesSicaSalidaUnprocessableEntity:
+      description: 'Solicitud válida a nivel JSON, pero no procesable. Precedencia normativa: si la API detecta una regla
+        que replica una validación SQL, debe devolver el código funcional específico listado en x-api-codes; GL-API-REQ-002
+        queda reservado para reglas de contrato sin código específico.'
+      headers:
+        X-Trace-Id:
+          $ref: '#/components/headers/TraceIdHeader'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            gl_pend_sica_sal_001:
+              summary: GL-PEND-SICA-SAL-001 — validación específica de la operación
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-pend-sica-sal-001
+                title: Solicitud no procesable
+                status: 422
+                code: GL-PEND-SICA-SAL-001
+                detail: maxReintentosPorSistema debe ser mayor que cero.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+            gl_api_req_002:
+              summary: GL-API-REQ-002 — validación contractual sin código funcional específico
+              value:
+                type: https://errors.example.invalid/gestion-ludopatas/gl-api-req-002
+                title: Solicitud no procesable
+                status: 422
+                code: GL-API-REQ-002
+                detail: La solicitud no cumple las reglas del contrato.
+                traceId: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+                timestamp: '2026-08-04T21:00:00-05:00'
+                retryable: false
+                source: api
+      x-api-codes:
+      - GL-PEND-SICA-SAL-001
+      - GL-API-REQ-002
+      x-validation-precedence: replicated-sql-validation-before-generic-contract-validation
+x-contract-status: proposed-to-be
+x-source-database: bd_autobot
+x-source-engine: SQL Server 2019
+x-security-alternative: ApiKeyAuth se conserva solo como alternativa de análisis y está marcada x-active=false; no está 
+  autorizada por la seguridad global ni por ninguna operación.
+x-validation-precedence:
+  description: Orden normativo para clasificar errores detectados antes o durante la ejecución SQL. La capa API debe 
+    producir el mismo código funcional específico cuando replique una validación del SP.
+  rules:
+  - order: 1
+    condition: JSON ilegible, cuerpo no deserializable o tipo JSON incompatible
+    httpStatus: 400
+    apiCode: GL-API-REQ-001
+  - order: 2
+    condition: Regla específica de la operación que replica una validación SQL controlada
+    httpStatus: 422
+    apiCode: Código GL-CORTE-* o GL-PEND-* correspondiente, aunque la API la detecte antes de ejecutar el SP
+  - order: 3
+    condition: Validación de contrato sin código funcional específico
+    httpStatus: 422
+    apiCode: GL-API-REQ-002
+  - order: 4
+    condition: El Stored Procedure devuelve un error controlado
+    httpStatus: Según x-sql-errors
+    apiCode: Exactamente el mismo código funcional definido para esa condición

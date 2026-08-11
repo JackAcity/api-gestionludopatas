@@ -1,0 +1,9 @@
+.git
+.vs
+.env
+.env.*
+**/bin
+**/obj
+postman
+test
+README.md

@@ -1,0 +1,401 @@
+{
+  "info": {
+    "name": "GestionLudopatas.Api - Contrato sin efectos",
+    "description": "Ocho prevalidaciones deterministas, una por operación. Todas deben devolver 422 y un código GL-* sin invocar SQL ni crear datos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-Api-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const expectedCodes = {",
+          "  \"Contrato - Cortes - Resolver inicio\": \"GL-CORTE-RES-001\",",
+          "  \"Contrato - Cortes - Crear\": \"GL-CORTE-CRE-001\",",
+          "  \"Contrato - Pendientes - CALIMACO ingreso\": \"GL-PEND-CAL-ING-001\",",
+          "  \"Contrato - Pendientes - CALIMACO salida\": \"GL-PEND-CAL-SAL-001\",",
+          "  \"Contrato - Pendientes - CMP ingreso\": \"GL-PEND-CMP-ING-001\",",
+          "  \"Contrato - Pendientes - CMP salida\": \"GL-PEND-CMP-SAL-001\",",
+          "  \"Contrato - Pendientes - SICA ingreso\": \"GL-PEND-SICA-ING-001\",",
+          "  \"Contrato - Pendientes - SICA salida\": \"GL-PEND-SICA-SAL-001\"",
+          "};",
+          "const expectedCode = expectedCodes[pm.info.requestName];",
+          "if (!expectedCode) {",
+          "  throw new Error('No hay contrato configurado para ' + pm.info.requestName + '.');",
+          "}",
+          "pm.variables.set(\"contractExpectedStatus\", \"422\");",
+          "pm.variables.set(\"contractExpectedCode\", expectedCode);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "(() => {",
+          "  const responseCode = pm.response.code;",
+          "if (!Number.isInteger(responseCode) || responseCode === 0) {",
+          "  pm.test(\"Respuesta HTTP recibida\", function () {",
+          "    throw new Error(\"No se recibio respuesta HTTP; revise baseUrl, red/VPN y el servicio.\");",
+          "  });",
+          "} else {",
+          "  const expectedStatus = Number(pm.variables.get(\"contractExpectedStatus\"));",
+          "  const expectedCode = pm.variables.get(\"contractExpectedCode\");",
+          "  pm.test(\"Contrato Problem Details\", function () {",
+          "    pm.response.to.have.status(expectedStatus);",
+          "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/problem+json\");",
+          "    const problem = pm.response.json();",
+          "    pm.expect(problem.status).to.eql(expectedStatus);",
+          "    pm.expect(problem.code).to.eql(expectedCode);",
+          "    pm.expect(problem.type).to.be.a(\"string\").and.not.empty;",
+          "    pm.expect(problem.title).to.be.a(\"string\").and.not.empty;",
+          "    pm.expect(problem.detail).to.be.a(\"string\").and.not.empty;",
+          "    pm.expect(problem.traceId).to.be.a(\"string\").and.not.empty;",
+          "    pm.expect(problem.timestamp).to.be.a(\"string\").and.not.empty;",
+          "    pm.expect(problem.retryable).to.eql(false);",
+          "    pm.expect(problem.source).to.eql(\"api\");",
+          "    pm.expect(pm.response.headers.get(\"X-Trace-Id\")).to.be.a(\"string\").and.not.empty;",
+          "    pm.expect(pm.response.headers.get(\"X-Correlation-Id\")).to.eql(pm.variables.replaceIn(\"{{correlationId}}\"));",
+          "  });",
+          "}",
+          "})();"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Contrato - Cortes - Resolver inicio",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Correlation-Id",
+            "value": "{{correlationId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fechaHoraEvaluacion\": null,\n  \"timeoutMinutos\": 30\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/cortes/resoluciones-inicio",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "cortes",
+            "resoluciones-inicio"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Contrato - Cortes - Crear",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Correlation-Id",
+            "value": "{{correlationId}}"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "{{idempotencyKey}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tipoCorte\": \"otro\",\n  \"fechaHoraCorte\": null,\n  \"fechaHoraEjecucion\": \"2026-08-10T00:00:00-05:00\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/cortes",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "cortes"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Contrato - Pendientes - CALIMACO ingreso",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Correlation-Id",
+            "value": "{{correlationId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"corteIdActual\": null,\n  \"maxReintentosPorSistema\": 3,\n  \"esReintentoForzado\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pendientes/calimaco/ingresos/busqueda",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "pendientes",
+            "calimaco",
+            "ingresos",
+            "busqueda"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Contrato - Pendientes - CALIMACO salida",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Correlation-Id",
+            "value": "{{correlationId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"corteIdActual\": null,\n  \"maxReintentosPorSistema\": 3,\n  \"esReintentoForzado\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pendientes/calimaco/salidas/busqueda",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "pendientes",
+            "calimaco",
+            "salidas",
+            "busqueda"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Contrato - Pendientes - CMP ingreso",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Correlation-Id",
+            "value": "{{correlationId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"corteIdActual\": null,\n  \"maxReintentosPorSistema\": 3,\n  \"esReintentoForzado\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pendientes/cmp/ingresos/busqueda",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "pendientes",
+            "cmp",
+            "ingresos",
+            "busqueda"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Contrato - Pendientes - CMP salida",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Correlation-Id",
+            "value": "{{correlationId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"corteIdActual\": null,\n  \"maxReintentosPorSistema\": 3,\n  \"esReintentoForzado\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pendientes/cmp/salidas/busqueda",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "pendientes",
+            "cmp",
+            "salidas",
+            "busqueda"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Contrato - Pendientes - SICA ingreso",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Correlation-Id",
+            "value": "{{correlationId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"maxReintentosPorSistema\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pendientes/sica/ingresos/busqueda",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "pendientes",
+            "sica",
+            "ingresos",
+            "busqueda"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Contrato - Pendientes - SICA salida",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Correlation-Id",
+            "value": "{{correlationId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"maxReintentosPorSistema\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pendientes/sica/salidas/busqueda",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "pendientes",
+            "sica",
+            "salidas",
+            "busqueda"
+          ]
+        }
+      }
+    }
+  ]
+}

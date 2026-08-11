@@ -1,0 +1,20 @@
+# Local tooling and workstation state
+.claude/
+.vs/
+**/*.user
+
+# Build output and dependency caches
+**/bin/
+**/obj/
+**/node_modules/
+
+# Secrets and local environment overrides
+**/.env
+**/.env.*
+!**/.env.example
+**/appsettings.*.local.json
+api-gestionludopatas/postman/GestionLudopatas.local.postman_environment.json
+
+# OS files
+Thumbs.db
+.DS_Store

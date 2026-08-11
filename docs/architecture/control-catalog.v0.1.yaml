@@ -1,0 +1,122 @@
+catalog_version: 0.1
+status: proposed
+controls:
+  - control_id: SDC-001
+    name: trusted-mainline
+    objective: impedir integración no controlada a una línea confiable
+    risk_addressed: cambios maliciosos, defectuosos o sin trazabilidad
+    requirement: la integración debe satisfacer gates definidos por perfil de riesgo
+    source_basis: [SRC-NIST-001, SRC-GH-002]
+    source_strength: final-standard-plus-platform-capability
+    applicability: [medium, high]
+    implementation_neutral: proteger rama de integración y exigir validación independiente
+    github_candidate: ruleset con PR, checks requeridos, conversaciones resueltas y bypass mínimo
+    verification: intento controlado de merge con check fallido y revisión de configuración
+    expected_evidence: [ruleset-snapshot, failed-merge-event, check-result]
+    failure_condition: cambio integra sin gate requerido
+    severity: high
+    exceptions: excepción con dueño, expiración y riesgo residual
+    residual_risk: revisor comprometido o bypass autorizado
+    owner: repository-governance-owner
+  - control_id: SDC-002
+    name: independent-integration-validation
+    objective: detectar regresión antes de integrar
+    risk_addressed: build no reproducible, prueba omitida, contrato roto
+    requirement: el cambio debe tener validación determinista independiente del autor/agente
+    source_basis: [SRC-DORA-001, SRC-NIST-001]
+    source_strength: research-plus-final-standard
+    applicability: [low, medium, high]
+    implementation_neutral: build aislado, pruebas y validación de contratos versionados
+    github_candidate: workflow CI con token mínimo y evidencia de run
+    verification: introducir fixture que falle y confirmar que bloquea el gate
+    expected_evidence: [workflow-run, test-report, artifact-digest]
+    failure_condition: no hay evidencia o el fallo no bloquea donde corresponde
+    severity: high
+    exceptions: solo cambios sin artefacto ejecutable, documentados
+    residual_risk: pruebas incompletas o runner comprometido
+    owner: engineering-owner
+  - control_id: SDC-003
+    name: workflow-supply-chain-integrity
+    objective: limitar sustitución de automatización y permisos excesivos
+    risk_addressed: acción mutable, token exfiltrado, trigger inseguro
+    requirement: dependencias de automatización y permisos deben ser explícitos y verificables
+    source_basis: [SRC-GH-001, SRC-NIST-001]
+    source_strength: platform-guidance-plus-final-standard
+    applicability: [medium, high]
+    implementation_neutral: versiones inmutables, mínimo privilegio y prohibición de ejecutar código no confiable con secretos
+    github_candidate: SHA completa, permissions por job, sin pull_request_target salvo análisis aprobado
+    verification: lint de workflow, inspección API y caso vulnerable de referencia mutable
+    expected_evidence: [workflow-source, repository-setting-snapshot, evaluation-result]
+    failure_condition: referencia mutable o permiso no justificado
+    severity: critical
+    exceptions: versión mutable solo con aprobación temporal y monitoreo compensatorio
+    residual_risk: compromiso de dependencia ya fijada
+    owner: delivery-security-owner
+  - control_id: SDC-004
+    name: deployment-authorization-and-separation
+    objective: evitar promoción no autorizada o autoaprobada
+    risk_addressed: escalamiento de ambiente y aprobación bypass
+    requirement: producción requiere identidad, autorización y evidencia separadas del autor
+    source_basis: [SRC-NIST-001, SRC-GH-003]
+    source_strength: final-standard-plus-platform-capability
+    applicability: [high]
+    implementation_neutral: gate de ambiente, segregación y registro de aprobación
+    github_candidate: environment protegido, reglas de rama y aprobación no autoaprobable si el plan lo permite
+    verification: intento de deploy por actor no autorizado y revisión de audit log
+    expected_evidence: [environment-config, approval-event, deployment-log]
+    failure_condition: autor/agente despliega o aprueba solo un cambio material
+    severity: critical
+    exceptions: incidente con procedimiento break-glass auditado
+    residual_risk: colusión o compromiso de aprobador
+    owner: release-authority
+  - control_id: SDC-005
+    name: nonhuman-identity-and-runner-boundary
+    objective: reducir secretos persistentes y alcance de runner
+    risk_addressed: exfiltración, runner comprometido, identidad reutilizada
+    requirement: identidad no humana debe ser de mínimo privilegio, corta vida cuando sea viable y separada por ambiente
+    source_basis: [SRC-GH-003, SRC-GH-004, SRC-NIST-001]
+    source_strength: platform-capability-plus-final-standard
+    applicability: [medium, high]
+    implementation_neutral: federación o credencial rotada; runner dedicado, segmentado y sin ejecutar PR no confiable
+    github_candidate: OIDC con claims restringidos; runner labels/grupos y environment por ambiente
+    verification: prueba de claim no autorizado, inventario de runners y revisión de permisos
+    expected_evidence: [oidc-trust-policy, runner-inventory, access-denial-log]
+    failure_condition: token largo sin dueño o runner comparte confianza con PR no confiable
+    severity: critical
+    exceptions: sistema legado con rotación, expiración y control compensatorio
+    residual_risk: compromiso del proveedor de identidad o host
+    owner: platform-security-owner
+  - control_id: SDC-006
+    name: artifact-integrity-and-provenance
+    objective: desplegar solo artefacto trazable a fuente y build
+    risk_addressed: sustitución de artefacto, build no reproducible, provenance falsificada
+    requirement: release identificable por commit, builder y digest; verificar antes de confiar
+    source_basis: [SRC-SLSA-001, SRC-GH-005]
+    source_strength: approved-spec-plus-platform-capability
+    applicability: [high]
+    implementation_neutral: artefacto inmutable, SBOM/provenance y verificación de consumidor
+    github_candidate: GitHub artifact attestations si plan permite; registro con digest y verificación CLI
+    verification: cambiar artefacto o provenance y comprobar rechazo de consumidor
+    expected_evidence: [artifact-digest, sbom, provenance, verification-log]
+    failure_condition: deploy no puede ligarse a commit/build o attestation no se verifica
+    severity: high
+    exceptions: transición con inventario manual fechado
+    residual_risk: política de verificación no aplicada en runtime
+    owner: release-engineering-owner
+  - control_id: SDC-007
+    name: agent-governance
+    objective: evitar que un agente sea su propia raíz de confianza
+    risk_addressed: cambio inseguro generado, autoaprobado, fusionado o desplegado por agente
+    requirement: candidato de agente es input no confiable hasta verificación determinista e independencia humana/riesgo
+    source_basis: [SRC-NIST-001, SRC-SF-001, SRC-DSL-001]
+    source_strength: final-standard-plus-nonnormative-engineering
+    applicability: [low, medium, high]
+    implementation_neutral: separar intención, generación, auditoría, aprobación y despliegue
+    github_candidate: CODEOWNERS/ruleset, CI independiente y identidad sin privilegio de merge/deploy
+    verification: eval que intente bypass, false positive y cambio malicioso de workflow
+    expected_evidence: [handoff-record, evaluation-report, independent-workflow-run, approval-event]
+    failure_condition: mismo agente es generador, único verificador, aprobador y ejecutor material
+    severity: critical
+    exceptions: tareas no materiales y reversibles, registradas
+    residual_risk: sesgo de revisores y huecos de test
+    owner: ai-governance-owner

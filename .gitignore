@@ -3,6 +3,10 @@
 .vs/
 **/*.user
 
+# SwarmForge creates local worktrees and runtime handoffs.
+.worktrees/
+.swarmforge/
+
 # Build output and dependency caches
 **/bin/
 **/obj/

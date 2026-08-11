@@ -48,8 +48,12 @@ public sealed class DocumentacionOpenApiExtensionesTests
             Assert.Equal("X-Api-Key", esquema.GetProperty("name").GetString());
             Assert.Equal("header", esquema.GetProperty("in").GetString());
             foreach (var ruta in raiz.GetProperty("paths").EnumerateObject())
-            foreach (var operacion in ruta.Value.EnumerateObject())
-                Assert.NotEmpty(operacion.Value.GetProperty("security").EnumerateArray());
+            {
+                foreach (var operacion in ruta.Value.EnumerateObject())
+                {
+                    Assert.NotEmpty(operacion.Value.GetProperty("security").EnumerateArray());
+                }
+            }
         }
         finally
         {

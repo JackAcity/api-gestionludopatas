@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /api-gestionludopatas
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - area:api
+
+  - package-ecosystem: docker
+    directory: /api-gestionludopatas
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 2
+    labels:
+      - dependencies
+      - area:devops
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 2
+    labels:
+      - dependencies
+      - area:devops

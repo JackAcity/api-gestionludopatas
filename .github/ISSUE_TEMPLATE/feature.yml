@@ -1,0 +1,25 @@
+name: Cambio de producto o plataforma
+description: Proponer una capacidad, una mejora tecnica o un cambio operativo.
+title: "[feature]: "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Resultado y criterio de aceptacion
+      description: Describe el resultado observable, no una solucion preasignada.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Contratos, seguridad y restricciones
+      description: OpenSpec, DB, Vault, consumidores UiPath, ambientes y riesgos conocidos.
+    validations:
+      required: true
+  - type: textarea
+    id: rollout
+    attributes:
+      label: Prueba, despliegue y reversa
+    validations:
+      required: true

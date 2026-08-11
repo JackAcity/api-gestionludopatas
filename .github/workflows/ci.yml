@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+  NUGET_XMLDOC_MODE: skip
+  SOLUTION_FILE: api-gestionludopatas/api-gestionludopatas.slnx
+
+jobs:
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore "$SOLUTION_FILE"
+
+      - name: Verify formatting
+        run: dotnet format "$SOLUTION_FILE" --verify-no-changes --no-restore
+
+      - name: Build release without warnings
+        run: dotnet build "$SOLUTION_FILE" --configuration Release --no-restore -warnaserror
+
+      - name: Run tests with coverage
+        run: >-
+          dotnet test "$SOLUTION_FILE" --configuration Release --no-build
+          --logger "trx;LogFileName=tests.trx" --results-directory TestResults
+          --collect:"XPlat Code Coverage"
+
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: test-results-${{ github.run_id }}
+          path: TestResults/
+          if-no-files-found: warn
+          retention-days: 14
+
+  contract-artifacts:
+    name: contract-artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Validate versioned JSON contracts
+        shell: pwsh
+        run: |
+          $contractRoots = @(
+            'api-gestionludopatas/postman',
+            'endpoint'
+          )
+          $jsonFiles = Get-ChildItem -Path $contractRoots -Recurse -File -Filter '*.json'
+          if ($jsonFiles.Count -eq 0) {
+            throw 'No se encontraron contratos JSON versionados.'
+          }
+          foreach ($jsonFile in $jsonFiles) {
+            Get-Content -LiteralPath $jsonFile.FullName -Raw | ConvertFrom-Json -ErrorAction Stop | Out-Null
+            Write-Host "JSON valido: $($jsonFile.FullName)"
+          }
+
+  container-build:
+    name: container-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Build production image
+        run: docker build --pull --tag gestionludopatas-api:ci api-gestionludopatas
+
+      - name: Verify non-root container user
+        run: |
+          test "$(docker image inspect gestionludopatas-api:ci --format '{{.Config.User}}')" = "gestionludopatas"

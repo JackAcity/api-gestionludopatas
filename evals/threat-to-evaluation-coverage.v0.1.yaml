@@ -1,0 +1,105 @@
+coverage_plan_version: 0.1
+status: planned-not-executed
+purpose: >
+  Demostrar que cada ruta material de amenaza tiene control o precondición,
+  familia EVF y uno o más experimentos planificados. No es una suite ejecutada.
+threat_coverage:
+  - threat_id: TM-01
+    controls: [SDC-001, SDC-007]
+    families: [EVF-01]
+    cases: [EVAL-001, EVAL-010]
+  - threat_id: TM-02
+    controls: [SDC-001, SDC-006]
+    families: [EVF-01, EVF-06]
+    cases: [EVAL-011]
+  - threat_id: TM-03
+    controls: [SDC-003, SDC-005]
+    families: [EVF-03, EVF-05]
+    cases: [EVAL-012]
+  - threat_id: TM-04
+    controls: [SDC-003]
+    families: [EVF-03]
+    cases: [EVAL-013]
+  - threat_id: TM-05
+    controls: [SDC-003]
+    families: [EVF-03]
+    cases: [EVAL-003, EVAL-008]
+  - threat_id: TM-06
+    controls: [SDC-003, SDC-006]
+    families: [EVF-03, EVF-06]
+    cases: [EVAL-014, EVAL-015]
+  - threat_id: TM-07
+    controls: [SDC-002, SDC-003]
+    families: [EVF-02, EVF-03]
+    cases: [EVAL-016, EVAL-017]
+  - threat_id: TM-08
+    controls: [SDC-003, SDC-005]
+    families: [EVF-03, EVF-05]
+    cases: [EVAL-006, EVAL-018, EVAL-019]
+  - threat_id: TM-09
+    controls: [SDC-005]
+    families: [EVF-05]
+    cases: [EVAL-020]
+  - threat_id: TM-10
+    controls: [SDC-005, SDC-007]
+    families: [EVF-05, EVF-07]
+    cases: [EVAL-021, EVAL-022]
+  - threat_id: TM-11
+    controls: [SDC-004, SDC-007]
+    families: [EVF-04, EVF-07]
+    cases: [EVAL-005, EVAL-023]
+  - threat_id: TM-12
+    controls: [SDC-005, SDC-006]
+    families: [EVF-05, EVF-06]
+    cases: [EVAL-024]
+  - threat_id: TM-13
+    controls: [SDC-004, SDC-006]
+    families: [EVF-04, EVF-06]
+    cases: [EVAL-009, EVAL-025]
+  - threat_id: TM-14
+    controls: [SDC-004, SDC-006]
+    families: [EVF-04, EVF-06]
+    cases: [EVAL-026]
+  - threat_id: TM-15
+    controls: [SDC-004, SDC-007]
+    families: [EVF-04, EVF-07]
+    cases: [EVAL-027]
+  - threat_id: TM-16
+    controls: [SDC-004, SDC-006]
+    families: [EVF-08]
+    cases: [EVAL-028]
+  - threat_id: TM-17
+    controls: [SDC-004]
+    families: [EVF-04, EVF-08]
+    cases: [EVAL-029, EVAL-030]
+  - threat_id: TM-18
+    publication_gate: PRRG-001
+    families: [EVF-09]
+    cases: [EVAL-031]
+planned_cases:
+  - { case_id: EVAL-010, scenario: administrative bypass attempts mainline integration without recorded exception, expected_status: fail, dimensions: [direct-violation, bypass-evasion] }
+  - { case_id: EVAL-011, scenario: protected tag or release points to an unapproved revision, expected_status: fail, dimensions: [direct-violation, boundary] }
+  - { case_id: EVAL-012, scenario: pull request changes a workflow and executes untrusted code with a writable token or secret, expected_status: fail, dimensions: [direct-violation, cross-control-interaction] }
+  - { case_id: EVAL-013, scenario: workflow trigger or interpolated context produces script injection, expected_status: fail, dimensions: [bypass-evasion, boundary] }
+  - { case_id: EVAL-014, scenario: build cache is poisoned by an untrusted producer, expected_status: fail, dimensions: [direct-violation, cross-control-interaction] }
+  - { case_id: EVAL-015, scenario: artifact or workspace from another workflow is substituted before build consumption, expected_status: fail, dimensions: [direct-violation, bypass-evasion] }
+  - { case_id: EVAL-016, scenario: NuGet dependency confusion resolves a package from an untrusted feed, expected_status: fail, dimensions: [direct-violation, boundary] }
+  - { case_id: EVAL-017, scenario: dependency lockfile is absent or not honored by the build, expected_status: fail, dimensions: [direct-violation, benign-false-positive] }
+  - { case_id: EVAL-018, scenario: self-hosted runner persists workspace or exposes Docker socket across trust boundaries, expected_status: fail, dimensions: [direct-violation, cross-control-interaction] }
+  - { case_id: EVAL-019, scenario: runner has unapproved network egress to internal service, expected_status: fail, dimensions: [direct-violation, valid-exception] }
+  - { case_id: EVAL-020, scenario: OIDC trust accepts unauthorized repository ref audience or workflow, expected_status: fail, dimensions: [direct-violation, bypass-evasion] }
+  - { case_id: EVAL-021, scenario: agent follows malicious prompt or context that changes delivery intent, expected_status: fail, dimensions: [direct-violation, boundary] }
+  - { case_id: EVAL-022, scenario: agent invokes a tool outside the approved scope or propagates a credential, expected_status: fail, dimensions: [direct-violation, cross-control-interaction] }
+  - { case_id: EVAL-023, scenario: generating agent is also the only verifier and material executor, expected_status: fail, dimensions: [direct-violation, bypass-evasion] }
+  - { case_id: EVAL-024, scenario: builder identity or provenance producer is not trusted by the consumer, expected_status: fail, dimensions: [direct-violation, boundary] }
+  - { case_id: EVAL-025, scenario: consumer deployment skips digest or provenance verification, expected_status: fail, dimensions: [bypass-evasion, cross-control-interaction] }
+  - { case_id: EVAL-026, scenario: approved deployment switches to a different artifact digest before promotion, expected_status: fail, dimensions: [direct-violation, bypass-evasion] }
+  - { case_id: EVAL-027, scenario: production approval is self-approved or issued by unauthorized identity, expected_status: fail, dimensions: [direct-violation, valid-exception] }
+  - { case_id: EVAL-028, scenario: evidence chain is truncated tampered or cannot correlate commit run and deployment, expected_status: fail, dimensions: [direct-violation, boundary] }
+  - { case_id: EVAL-029, scenario: database migration breaks N/N-1 compatibility, expected_status: fail, dimensions: [direct-violation, boundary] }
+  - { case_id: EVAL-030, scenario: database change lacks a tested restore or recovery path, expected_status: fail, dimensions: [direct-violation, valid-exception] }
+  - { case_id: EVAL-031, scenario: public reference release lacks IP authorization or operational sanitization evidence, expected_status: fail, dimensions: [direct-violation, valid-exception] }
+coverage_rule: >
+  A threat is planned only when it has a listed control or publication gate, EVF family,
+  and case identifiers. Planned case identifiers are not evidence that a fixture exists
+  or has run.

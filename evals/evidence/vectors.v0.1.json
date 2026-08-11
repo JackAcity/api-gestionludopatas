@@ -1,0 +1,182 @@
+{
+  "vectors": [
+    {
+      "case_id": "EBV-001",
+      "expected": { "structure_valid": true, "semantic_valid": true },
+      "bundle": {
+        "evidence_id": "EVB-DEMO-001",
+        "control_id": "SDC-002",
+        "change_id": "PR-EXAMPLE-001",
+        "repository": "example/secure-delivery-demo",
+        "scm_type": "git",
+        "commit_hash_algorithm": "sha1",
+        "commit_sha": "0123456789abcdef0123456789abcdef01234567",
+        "commit_uri": "https://example.invalid/example/secure-delivery-demo/commit/0123456789abcdef0123456789abcdef01234567",
+        "actor": "example-contributor",
+        "actor_type": "human",
+        "workflow": "ci-validation",
+        "run_id": "example-run-001",
+        "artifact_digest": null,
+        "environment": null,
+        "producer": "example-ci",
+        "timestamp": "2026-08-11T00:00:00Z",
+        "verifier": "independent-ci-validator",
+        "tool": { "name": "example-validator", "version": "0.1.0", "invocation_digest": "sha256:abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd" },
+        "chain_of_custody": [
+          { "event": "produced", "actor": "example-ci", "timestamp": "2026-08-11T00:00:00Z", "system_uri": "https://example.invalid/runs/example-run-001", "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" },
+          { "event": "verified", "actor": "independent-ci-validator", "timestamp": "2026-08-11T00:01:00Z", "system_uri": "https://example.invalid/verifications/EVB-DEMO-001", "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" }
+        ],
+        "evidence_type": "test-report",
+        "evidence_uri": "https://example.invalid/evidence/EVB-DEMO-001",
+        "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "retention_class": "audit",
+        "sensitivity": "internal",
+        "result": "pass",
+        "correlation_id": "example-correlation-001",
+        "redaction_applied": false
+      }
+    },
+    {
+      "case_id": "EBV-002",
+      "expected": { "structure_valid": false, "semantic_valid": null },
+      "bundle": {
+        "evidence_id": "EVB-DEMO-002",
+        "control_id": "SDC-006",
+        "change_id": "PR-EXAMPLE-002",
+        "repository": "example/secure-delivery-demo",
+        "scm_type": "git",
+        "commit_hash_algorithm": "sha1",
+        "commit_sha": "0123456789abcdef0123456789abcdef01234567",
+        "commit_uri": "https://example.invalid/commit/0123456789abcdef0123456789abcdef01234567",
+        "actor": "example-ci",
+        "actor_type": "automation",
+        "workflow": "artifact-build",
+        "run_id": "example-run-002",
+        "artifact_digest": null,
+        "environment": null,
+        "producer": "example-ci",
+        "timestamp": "2026-08-11T00:00:00Z",
+        "verifier": "independent-ci-validator",
+        "tool": { "name": "example-validator", "version": "0.1.0", "invocation_digest": null },
+        "chain_of_custody": [
+          { "event": "produced", "actor": "example-ci", "timestamp": "2026-08-11T00:00:00Z", "system_uri": "https://example.invalid/runs/example-run-002", "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" },
+          { "event": "verified", "actor": "independent-ci-validator", "timestamp": "2026-08-11T00:01:00Z", "system_uri": "https://example.invalid/verifications/EVB-DEMO-002", "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" }
+        ],
+        "evidence_type": "attestation",
+        "evidence_uri": "https://example.invalid/evidence/EVB-DEMO-002",
+        "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "retention_class": "audit",
+        "sensitivity": "internal",
+        "result": "fail",
+        "correlation_id": "example-correlation-002",
+        "redaction_applied": false
+      }
+    },
+    {
+      "case_id": "EBV-003",
+      "expected": { "structure_valid": false, "semantic_valid": null },
+      "bundle": {
+        "evidence_id": "EVB-DEMO-003",
+        "control_id": "SDC-002",
+        "change_id": "PR-EXAMPLE-003",
+        "repository": "example/secure-delivery-demo",
+        "scm_type": "git",
+        "commit_hash_algorithm": "sha1",
+        "commit_sha": "0123456789abcdef0123456789abcdef01234567",
+        "commit_uri": "https://example.invalid/commit/0123456789abcdef0123456789abcdef01234567",
+        "actor": "example-ci",
+        "actor_type": "automation",
+        "workflow": "ci-validation",
+        "run_id": "example-run-003",
+        "artifact_digest": null,
+        "environment": null,
+        "producer": "example-ci",
+        "timestamp": "2026-08-11T00:00:00Z",
+        "tool": { "name": "example-validator", "version": "0.1.0", "invocation_digest": null },
+        "chain_of_custody": [
+          { "event": "produced", "actor": "example-ci", "timestamp": "2026-08-11T00:00:00Z", "system_uri": "https://example.invalid/runs/example-run-003", "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" }
+        ],
+        "evidence_type": "test-report",
+        "evidence_uri": "https://example.invalid/evidence/EVB-DEMO-003",
+        "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "retention_class": "audit",
+        "sensitivity": "internal",
+        "result": "fail",
+        "correlation_id": "example-correlation-003",
+        "redaction_applied": false
+      }
+    },
+    {
+      "case_id": "EBV-004",
+      "expected": { "structure_valid": true, "semantic_valid": false },
+      "bundle": {
+        "evidence_id": "EVB-DEMO-004",
+        "control_id": "SDC-007",
+        "change_id": "PR-EXAMPLE-004",
+        "repository": "example/secure-delivery-demo",
+        "scm_type": "git",
+        "commit_hash_algorithm": "sha1",
+        "commit_sha": "0123456789abcdef0123456789abcdef01234567",
+        "commit_uri": "https://example.invalid/commit/0123456789abcdef0123456789abcdef01234567",
+        "actor": "example-agent",
+        "actor_type": "agent",
+        "workflow": "agent-review",
+        "run_id": "example-run-004",
+        "artifact_digest": null,
+        "environment": null,
+        "producer": "example-agent",
+        "timestamp": "2026-08-11T00:00:00Z",
+        "verifier": "example-agent",
+        "tool": { "name": "example-validator", "version": "0.1.0", "invocation_digest": null },
+        "chain_of_custody": [
+          { "event": "produced", "actor": "example-agent", "timestamp": "2026-08-11T00:00:00Z", "system_uri": "https://example.invalid/runs/example-run-004", "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" },
+          { "event": "verified", "actor": "example-agent", "timestamp": "2026-08-11T00:01:00Z", "system_uri": "https://example.invalid/verifications/EVB-DEMO-004", "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" }
+        ],
+        "evidence_type": "test-report",
+        "evidence_uri": "https://example.invalid/evidence/EVB-DEMO-004",
+        "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "retention_class": "audit",
+        "sensitivity": "internal",
+        "result": "fail",
+        "correlation_id": "example-correlation-004",
+        "redaction_applied": false
+      }
+    },
+    {
+      "case_id": "EBV-005",
+      "expected": { "structure_valid": false, "semantic_valid": null },
+      "bundle": {
+        "evidence_id": "EVB-DEMO-005",
+        "control_id": "SDC-002",
+        "change_id": "PR-EXAMPLE-005",
+        "repository": "example/secure-delivery-demo",
+        "scm_type": "git",
+        "commit_hash_algorithm": "sha1",
+        "commit_sha": "0123456",
+        "commit_uri": "https://example.invalid/commit/0123456",
+        "actor": "example-ci",
+        "actor_type": "automation",
+        "workflow": "ci-validation",
+        "run_id": "example-run-005",
+        "artifact_digest": null,
+        "environment": null,
+        "producer": "example-ci",
+        "timestamp": "2026-08-11T00:00:00Z",
+        "verifier": "independent-ci-validator",
+        "tool": { "name": "example-validator", "version": "0.1.0", "invocation_digest": null },
+        "chain_of_custody": [
+          { "event": "produced", "actor": "example-ci", "timestamp": "2026-08-11T00:00:00Z", "system_uri": "https://example.invalid/runs/example-run-005", "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" },
+          { "event": "verified", "actor": "independent-ci-validator", "timestamp": "2026-08-11T00:01:00Z", "system_uri": "https://example.invalid/verifications/EVB-DEMO-005", "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" }
+        ],
+        "evidence_type": "test-report",
+        "evidence_uri": "https://example.invalid/evidence/EVB-DEMO-005",
+        "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "retention_class": "audit",
+        "sensitivity": "internal",
+        "result": "fail",
+        "correlation_id": "example-correlation-005",
+        "redaction_applied": false
+      }
+    }
+  ]
+}

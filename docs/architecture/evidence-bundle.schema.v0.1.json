@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JackAcity/api-gestionludopatas/docs/architecture/evidence-bundle.schema.v0.1.json",
+  "title": "Secure Delivery Evidence Bundle v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_id", "control_id", "change_id", "repository", "scm_type", "commit_hash_algorithm", "commit_sha", "commit_uri",
+    "actor", "actor_type", "producer", "timestamp", "verifier", "tool", "chain_of_custody",
+    "evidence_type", "evidence_uri", "content_digest", "retention_class",
+    "sensitivity", "result"
+  ],
+  "properties": {
+    "evidence_id": { "type": "string", "pattern": "^EVB-[A-Z0-9][A-Z0-9-]{2,63}$" },
+    "control_id": { "type": "string", "pattern": "^SDC-[0-9]{3}$" },
+    "change_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "repository": { "type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$" },
+    "scm_type": { "enum": ["git"] },
+    "commit_hash_algorithm": { "enum": ["sha1", "sha256"] },
+    "commit_sha": { "type": "string", "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$" },
+    "commit_uri": { "type": "string", "minLength": 1, "maxLength": 2048 },
+    "actor": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "actor_type": { "enum": ["human", "automation", "agent", "service"] },
+    "workflow": { "type": ["string", "null"], "maxLength": 300 },
+    "run_id": { "type": ["string", "null"], "maxLength": 128 },
+    "artifact_digest": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+    "environment": { "type": ["string", "null"], "maxLength": 100 },
+    "producer": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "verifier": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "invocation_digest": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    },
+    "chain_of_custody": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event", "actor", "timestamp", "system_uri", "content_digest"],
+        "properties": {
+          "event": { "enum": ["produced", "collected", "verified", "approved", "stored"] },
+          "actor": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "system_uri": { "type": "string", "minLength": 1, "maxLength": 2048 },
+          "content_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "evidence_type": {
+      "enum": ["configuration-snapshot", "workflow-run", "test-report", "scan-report", "attestation", "sbom", "deployment-log", "approval-record", "audit-event", "rollback-test"]
+    },
+    "evidence_uri": { "type": "string", "minLength": 1, "maxLength": 2048 },
+    "content_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "retention_class": { "enum": ["ephemeral", "operational", "audit", "legal-hold"] },
+    "sensitivity": { "enum": ["public", "internal", "confidential", "restricted"] },
+    "result": { "enum": ["pass", "fail", "unknown", "not-applicable"] },
+    "correlation_id": { "type": ["string", "null"], "maxLength": 200 },
+    "redaction_applied": { "type": "boolean", "default": false }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "evidence_type": { "const": "attestation" } },
+        "required": ["evidence_type"]
+      },
+      "then": {
+        "properties": {
+          "artifact_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        },
+        "required": ["artifact_digest"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "commit_hash_algorithm": { "const": "sha1" } },
+        "required": ["commit_hash_algorithm"]
+      },
+      "then": {
+        "properties": { "commit_sha": { "pattern": "^[a-f0-9]{40}$" } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "commit_hash_algorithm": { "const": "sha256" } },
+        "required": ["commit_hash_algorithm"]
+      },
+      "then": {
+        "properties": { "commit_sha": { "pattern": "^[a-f0-9]{64}$" } }
+      }
+    }
+  ]
+}

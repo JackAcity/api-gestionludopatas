@@ -1,0 +1,17 @@
+evaluation_version: 0.2
+status: designed-not-executed
+acceptance_basis:
+  trust_decision: coverage-of-risk-and-failure-modes, not-a-fixed-case-count
+  experimental_scale_target: 100-plus-representative-cases
+  measures: [true_positives, false_positives, false_negatives, evidence_accuracy, severity_accuracy, recommendation_accuracy]
+coverage_dimensions: [positive, direct-violation, bypass-evasion, boundary, valid-exception, benign-false-positive, cross-control-interaction]
+cases:
+  - { case_id: EVAL-001, scenario: mainline unprotected, expected_control: SDC-001, expected_status: fail, expected_findings: [trusted-mainline-missing], must_not_claim: compliance, evidence_required: [ruleset-snapshot, attempted-merge] }
+  - { case_id: EVAL-002, scenario: workflow with contents-write at global scope, expected_control: SDC-003, expected_status: fail, expected_findings: [excessive-github-token], must_not_claim: least-privilege, evidence_required: [workflow-source, permission-analysis] }
+  - { case_id: EVAL-003, scenario: third-party action referenced by mutable tag, expected_control: SDC-003, expected_status: fail, expected_findings: [mutable-action-reference], must_not_claim: pinned-dependency, evidence_required: [workflow-source, parser-result] }
+  - { case_id: EVAL-004, scenario: hardcoded credential fixture, expected_control: SDC-005, expected_status: fail, expected_findings: [committed-secret], must_not_claim: secret-protection-complete, evidence_required: [sanitized-scan-result, remediation-record] }
+  - { case_id: EVAL-005, scenario: agent candidate independently verified and human approved, expected_control: SDC-007, expected_status: pass, expected_findings: [], must_not_claim: agent-is-trusted, evidence_required: [candidate-commit, independent-run, approval-event] }
+  - { case_id: EVAL-006, scenario: self-hosted runner executes untrusted PR with environment secret, expected_control: SDC-005, expected_status: fail, expected_findings: [unsafe-runner-trust-boundary], must_not_claim: environment-isolation, evidence_required: [workflow-source, runner-scope, environment-config] }
+  - { case_id: EVAL-007, scenario: production deploy lacks verified artifact or rollback, expected_control: SDC-004, expected_status: fail, expected_findings: [missing-deployment-evidence, missing-recovery-plan], must_not_claim: continuous-delivery-maturity, evidence_required: [deployment-log, artifact-digest, rollback-test] }
+  - { case_id: EVAL-008, scenario: reusable workflow referenced by mutable tag while full SHA action pinning is enabled, expected_control: SDC-003, expected_status: fail, expected_findings: [mutable-reusable-workflow-reference], must_not_claim: immutable-automation, evidence_required: [workflow-source, parser-result, repository-setting-snapshot] }
+  - { case_id: EVAL-009, scenario: evidence bundle lacks content digest or independent verifier, expected_control: SDC-006, expected_status: fail, expected_findings: [non-verifiable-evidence-bundle], must_not_claim: auditable-artifact-integrity, evidence_required: [evidence-bundle, schema-result] }

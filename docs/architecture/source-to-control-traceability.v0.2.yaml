@@ -1,0 +1,99 @@
+matrix_version: 0.2
+status: proposed
+purpose: >
+  Relaciona cada control con locators verificables y distingue autoridad de
+  fuente, recomendación, interpretación local, capacidad de plataforma y decisión.
+rules:
+  - Un locator no convierte una recomendación o capacidad de proveedor en obligación universal.
+  - Un control puede tener varias bases; su fuerza es la de su componente más débil cuando se formula como requisito.
+  - La ausencia de locator preciso bloquea una afirmación de trazabilidad completa.
+controls:
+  - control_id: SDC-001
+    refs:
+      - source_id: SRC-NIST-001
+        locator: PS.1.1
+        source_type: final-authoritative-guidance
+        interpretation: El código y la configuración como código necesitan acceso de mínimo privilegio.
+      - source_id: SRC-GH-002
+        locator: Available rules for rulesets / pull request, required status checks, bypass and file-path rules
+        source_type: platform-capability
+        interpretation: GitHub puede implementar parte de la protección de una línea confiable; la configuración debe probarse.
+    local_decision: El perfil medio/alto requiere integración mediante gates independientes y bypass explícito/auditado.
+  - control_id: SDC-002
+    refs:
+      - source_id: SRC-NIST-001
+        locator: PW.7.1 and PW.8.1
+        source_type: final-authoritative-guidance
+        interpretation: Revisión/análisis y pruebas deben seleccionarse y aplicarse de forma basada en riesgo.
+      - source_id: SRC-DORA-001
+        locator: Continuous Integration capability / frequent integration and automated testing
+        source_type: research-evidence
+        interpretation: Integración frecuente y tests rápidos orientan el diseño de validación, no un umbral obligatorio.
+    local_decision: Cada cambio integrable requiere build y pruebas deterministas independientes del autor o agente.
+  - control_id: SDC-003
+    refs:
+      - source_id: SRC-NIST-001
+        locator: PS.1.1 and PW.4.1
+        source_type: final-authoritative-guidance
+        interpretation: Acceso de mínimo privilegio y componentes mantenidos de forma segura sustentan la protección de automatización y dependencias.
+      - source_id: SRC-GH-001
+        locator: Secure use reference / immutable actions, GITHUB_TOKEN permissions, untrusted input and self-hosted runners
+        source_type: platform-guidance
+        interpretation: GitHub documenta los riesgos y mecanismos, no que una configuración concreta sea suficiente.
+    local_decision: Acciones y workflows reutilizables se fijan a referencias inmutables salvo excepción temporal y evaluada.
+  - control_id: SDC-004
+    refs:
+      - source_id: SRC-NIST-001
+        locator: PO.5.1
+        source_type: final-authoritative-guidance
+        interpretation: La separación y protección de ambientes apoya límites de promoción; SSDF no prescribe aprobación de deployment.
+      - source_id: SRC-GH-003
+        locator: Deployments and environments / protection rules, required reviewers and environment secrets
+        source_type: platform-capability
+        interpretation: GitHub puede aplicar un gate de ambiente; su disponibilidad y configuración deben verificarse por repositorio.
+    local_decision: Producción requiere identidad, autorización y evidencia separadas del autor para cambios de perfil alto.
+  - control_id: SDC-005
+    refs:
+      - source_id: SRC-NIST-001
+        locator: PS.1.1 and PO.5.1
+        source_type: final-authoritative-guidance
+        interpretation: Mínimo privilegio y límites de entorno sustentan identidad no humana separada y runners por confianza.
+      - source_id: SRC-GH-004
+        locator: OpenID Connect reference / id-token permission and customized subject claims
+        source_type: platform-capability
+        interpretation: OIDC permite federación de corta vida; no configura por sí solo el trust del proveedor.
+    local_decision: Un runner que ejecuta PR no confiable no comparte secretos, red ni identidad con despliegue.
+  - control_id: SDC-006
+    refs:
+      - source_id: SRC-NIST-001
+        locator: PS.2.1
+        source_type: final-authoritative-guidance
+        interpretation: La información de verificación de integridad debe estar disponible para quien confía en el release.
+      - source_id: SRC-SLSA-001
+        locator: Build L1 / provenance exists; Build L2 / hosted build platform and consumer validates authenticity
+        source_type: conditional-specification-requirement
+        interpretation: Provenance con digest es el mínimo conceptual; una afirmación L2 requiere builder y consumidor conformes.
+      - source_id: SRC-GH-005
+        locator: Artifact attestations / generate and verify attestations
+        source_type: platform-capability
+        interpretation: GitHub puede generar/verificar attestations, pero el consumidor debe hacer enforcement.
+    local_decision: No se despliega un artefacto de perfil alto sin ligar digest, commit, builder y verificación de consumidor.
+  - control_id: SDC-007
+    refs:
+      - source_id: SRC-NIST-001
+        locator: PS.1.1
+        source_type: final-authoritative-guidance
+        interpretation: El acceso de identidades humanas y no humanas a código/configuración debe ser de mínimo privilegio.
+      - source_id: SRC-NIST-003
+        locator: Concept paper / identity, authorization, auditing, non-repudiation and prompt-injection considerations
+        source_type: emerging-evidence
+        interpretation: Informa riesgos de agentes; no establece aún una norma final de separación de funciones.
+      - source_id: SRC-SF-001
+        locator: README / roles, worktrees and handoffs
+        source_type: engineering-reference
+        interpretation: Útil para coordinación local, no para autorización ni confianza.
+      - source_id: SRC-DSL-001
+        locator: Semantic model and deterministic validator framing
+        source_type: engineering-reference
+        interpretation: Apoya la hipótesis de un DSL validado, no una garantía de seguridad.
+    local_decision: Separar intención, generación, verificación independiente, aprobación material y ejecución de cambios de riesgo.

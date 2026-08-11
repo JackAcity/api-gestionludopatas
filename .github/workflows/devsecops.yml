@@ -31,6 +31,12 @@ jobs:
       contents: read
       pull-requests: read
     steps:
+      - name: Checkout complete history for secret detection
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
       - name: Scan repository history and current files
         uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
         env:

@@ -14,3 +14,6 @@ requisitos concretos.
 
 El objetivo actual es verificar propiedades de artefacto, no afirmar SLSA Build L1,
 L2 o L3. La plataforma, su aislamiento y el consumidor todavía son decisiones abiertas.
+Los `MUST` de SLSA son requisitos condicionales: aplican cuando un productor pretende
+satisfacer el nivel concreto, no convierten automáticamente el catálogo local en una
+declaración de conformidad.

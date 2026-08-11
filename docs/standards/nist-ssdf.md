@@ -1,7 +1,8 @@
 # NIST SSDF
 
-**Fuente normativa:** SRC-NIST-001, NIST SP 800-218 v1.1, final. El uso local es un
-mapeo de prácticas y tareas, no una certificación ni una declaración de conformidad.
+**Fuente:** SRC-NIST-001, NIST SP 800-218 v1.1, guía/recomendación final autoritativa.
+El uso local es un mapeo de prácticas y tareas, no una certificación, declaración de
+conformidad ni obligación local automática.
 SSDF v1.2 permanece **Draft** (SRC-NIST-002) y solo informa análisis de brechas.
 
 ## Cómo se usa en este modelo
@@ -19,5 +20,6 @@ declarar la interpretación local en la [matriz de trazabilidad](../architecture
 | PW.4.1 | Adquirir y mantener componentes de software razonablemente seguros. Apoya la gobernanza de dependencias y acciones de terceros. |
 | PW.7.1 / PW.8.1 | Determinar y aplicar revisión/análisis y pruebas de código según riesgo. Apoyan validación independiente, no un check concreto de GitHub. |
 
-La formulación normativa exacta permanece en SP 800-218. Las traducciones anteriores
-son interpretaciones de ingeniería locales y deben revisarse por perfil de riesgo.
+La formulación fuente permanece en SP 800-218. Las traducciones anteriores son
+interpretaciones de ingeniería locales y deben revisarse por perfil de riesgo. Solo una
+política, contrato, regulación o mandato con dueño puede convertirlas en requisito local.

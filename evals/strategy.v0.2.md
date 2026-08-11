@@ -31,6 +31,7 @@ Cada control aplicable se deriva por estas dimensiones:
 | EVF-06 integridad de artefacto | TM-02, TM-06, TM-12 a TM-14 | SDC-006 | digest, provenance, SBOM, verificación del consumidor y builder |
 | EVF-07 agentes | TM-01, TM-10, TM-11, TM-18 | SDC-007, SDC-005 | contexto/prompt injection, tool misuse, separación y publicación |
 | EVF-08 evidencia y recuperación | TM-16, TM-17 | SDC-004, SDC-006 | schema, hashes, correlación, retención, rollback y restore |
+| EVF-09 publicación de referencia | TM-18 | PRRG-001 | propiedad intelectual, autorización, sanitización operacional, licencia y confirmación de escaneo |
 
 ## Medición y stop conditions
 
@@ -45,6 +46,7 @@ No se avanza si ocurre cualquiera de estos casos:
 - un caso vulnerable pasa sin una excepción documentada;
 - la evidencia no puede validar contra el schema o contiene secreto;
 - la recomendación declara compliance, aislamiento o confianza no demostrados.
+- el Public Reference Release Gate no tiene evidencia y aprobación humana cuando TM-18 aplica.
 
 Las suites y fixtures se diseñan autocontenidos, sintéticos y sin secretos reales. Las
 variantes se añaden por modo de fallo nuevo, no para alcanzar un contador.

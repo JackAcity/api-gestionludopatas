@@ -6,19 +6,35 @@
 **Regla:** no se almacenan coincidencias, literales ni secretos en este registro.
 
 El escáner informó siete coincidencias de la regla `generic-api-key` en el commit
-`799324ce8d4a`. La clasificación siguiente es **preliminar automatizada**: una persona
+`799324ce8d4a8da21fd8aec72bc4d112d57ae121`. La clasificación siguiente es **preliminar automatizada**: una persona
 autorizada debe confirmarla antes de que cualquier documento afirme que el repositorio
 está libre de secretos.
 
+## Cálculo reproducible de `location_hash`
+
+Para cada hallazgo se calcula SHA-256 de los bytes UTF-8 de esta secuencia, usando LF
+(`\n`) como separador y sin terminador final:
+
+```text
+commit_sha_completo
+normalized_repo_relative_path
+rule_id
+decimal_start_line
+```
+
+`normalized_repo_relative_path` usa `/`, es relativo a la raíz del repositorio y no
+contiene `.` ni `..`. El contenido detectado, literal, valor de secreto y columna no
+forman parte de la entrada. Esto permite reproducir la ubicación sin revelar el match.
+
 | ID | `location_hash` | Clasificación preliminar | Razonamiento sanitizado | Reviewer | Fecha | Remediación |
 |---|---|---|---|---|---|---|
-| GL-001 | `sha256:cca12e2e19c1d26e96fbca891b6d6559c5545283160b7ebcb88837722d8a0aec` | candidate-false-positive | Constante de código de error; no hay asignación de secreto ni valor de alta entropía. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
-| GL-002 | `sha256:fbca7ea65a20a61fcfbfeb3a31eaffcdc273579e74c33e88227ca9368b46700f` | candidate-false-positive | Constante de código de error; no hay asignación de secreto ni valor de alta entropía. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
-| GL-003 | `sha256:6aefac54342c87652d101ce55d879946d5d0aa5eadf819c39a41586d8a33e177` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
-| GL-004 | `sha256:1e5746bc38261c620be73baf9f89f1a0c20c9ed34312c24d9d435a92f97f8248` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
-| GL-005 | `sha256:c4b025450e367bdb32dc080da940c1eff3f04004be600ae9265b31ba22836b91` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
-| GL-006 | `sha256:43f25ed46a8a7bcefd4c70486f3bbda48cd493c4259e360743c61a84a9b62462` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
-| GL-007 | `sha256:203204715528832e81608a7cc3edcb10931032ba8a99790f25d0503f3c754dd2` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
+| GL-001 | `sha256:0786ae2be7c8999b8430cf76d9a34368e2fa256ccf226dff7379eb7caba1eebc` | candidate-false-positive | Constante de código de error; no hay asignación de secreto ni valor de alta entropía. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
+| GL-002 | `sha256:ffe860bdcc1f06ca4bc6ffed47f2937936df62e43465ec347b26e50cd1ff32f3` | candidate-false-positive | Constante de código de error; no hay asignación de secreto ni valor de alta entropía. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
+| GL-003 | `sha256:5fd297ca9ce359b6e4f91a6e0414eb39699b35580f7d4655a72fe9942bcf23a3` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
+| GL-004 | `sha256:7b4749f32071385c11dc46ccc8a638a48b2dec70ac6553edffa9b527274f761a` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
+| GL-005 | `sha256:24a82501899f99da1b8980852e3caeaa57e4cb13c8c4228f672944c3d83b5a74` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
+| GL-006 | `sha256:e3e391bd7038503d8cb1911c14404325de1eb0b0b2599cecfd688b4e2443c21a` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
+| GL-007 | `sha256:349f1f4f3e3b45c28f3fae1d8e18471ac0df11d6817423dda8f986805e0bcba9` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
 
 **Prohibición de claim:** hasta confirmación humana y reescaneo posterior, no se afirma
 "secret-free", "sin secretos" ni equivalentes. Si se reclasifica un caso como exposición,

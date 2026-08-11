@@ -12,8 +12,10 @@ Este corpus separa un modelo de control portable de sus adaptadores. Un requisit
 | Riesgos | [modelo de amenazas v0.2](architecture/threat-model.md) | Propuesto |
 | Evidencia | [modelo](architecture/evidence-model.md) y [schema](architecture/evidence-bundle.schema.v0.1.json) | Propuesto |
 | GitHub | [mapa de capacidades v0.2](github/platform-capability-map.md) | Parcialmente verificado |
-| Evaluación | [estrategia v0.2](../evals/strategy.v0.2.md) y [`evals/`](../evals/) | Diseñado; no ejecutado |
+| Evaluación | [matriz v0.2](../evals/matrix.v0.2.yaml), [estrategia](../evals/strategy.v0.2.md) y [cobertura TM](../evals/threat-to-evaluation-coverage.v0.1.yaml) | Diseñado; no ejecutado |
 | Agentes y DSL | [gobierno de agentes](architecture/agent-governance.md) | Propuesto |
+| Publicación | [Public Reference Release Gate](architecture/public-reference-release-gate.md) | HOLD humano |
+| Publicación | [Public Reference Release Gate](architecture/public-reference-release-gate.md) | HOLD humano |
 | Decisión fundacional | [ADR-0001](adr/ADR-0001-platform-neutral-control-model.md) | Propuesto para aprobación |
 
 El Gate 1 permanece abierto hasta completar la [lista de cierre](architecture/gate-1-closure-checklist.md).

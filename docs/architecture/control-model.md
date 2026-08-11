@@ -11,13 +11,19 @@ Un control no existe porque una herramienta lo ofrezca. Existe solo cuando un ri
 | Etiqueta | Significado |
 |---|---|
 | **FACT** | Hecho observado, con fecha y evidencia reproducible. |
-| **STANDARD REQUIREMENT** | Obligación tomada de una fuente normativa aplicable. |
+| **FINAL AUTHORITATIVE GUIDANCE** | Publicación final que recomienda prácticas; por sí sola no crea una obligación local. Ejemplo: NIST SP 800-218. |
+| **CONDITIONAL SPECIFICATION REQUIREMENT** | `MUST`/`SHALL` aplicable solo cuando se pretende satisfacer un track, nivel o perfil declarado. Ejemplo: SLSA Build L2. |
+| **LOCAL MANDATORY REQUIREMENT** | Obligación adoptada expresamente por política, contrato, regulación o mandato de proyecto, con dueño y fundamento registrados. |
 | **PLATFORM CAPABILITY** | Función que una plataforma declara soportar; requiere configuración y prueba. |
 | **RESEARCH EVIDENCE** | Hallazgo que orienta una decisión, no obligación de cumplimiento. |
 | **ENGINEERING DECISION** | Elección local con alternativas, dueño y reversa. |
 | **ASSUMPTION** | Premisa no demostrada que bloquea o condiciona diseño. |
 | **HYPOTHESIS** | Afirmación que se probará mediante evaluación. |
 | **EXCEPTION** | Desviación aprobada, temporal, con riesgo residual y fecha de revisión. |
+
+Un locator de NIST sustenta una recomendación final y una interpretación local. Solo se
+convierte en `LOCAL MANDATORY REQUIREMENT` al registrar una adopción explícita. El
+catálogo actual contiene controles **propuestos**, no mandatos organizacionales adoptados.
 
 ## Perfiles de riesgo
 

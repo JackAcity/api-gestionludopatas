@@ -1,8 +1,8 @@
 matrix_version: 0.2
 status: proposed
 purpose: >
-  Relaciona cada control con locators verificables y distingue requisito de
-  fuente, interpretación local, capacidad de plataforma y decisión de ingeniería.
+  Relaciona cada control con locators verificables y distingue autoridad de
+  fuente, recomendación, interpretación local, capacidad de plataforma y decisión.
 rules:
   - Un locator no convierte una recomendación o capacidad de proveedor en obligación universal.
   - Un control puede tener varias bases; su fuerza es la de su componente más débil cuando se formula como requisito.
@@ -12,7 +12,7 @@ controls:
     refs:
       - source_id: SRC-NIST-001
         locator: PS.1.1
-        source_type: standard-requirement
+        source_type: final-authoritative-guidance
         interpretation: El código y la configuración como código necesitan acceso de mínimo privilegio.
       - source_id: SRC-GH-002
         locator: Available rules for rulesets / pull request, required status checks, bypass and file-path rules
@@ -23,7 +23,7 @@ controls:
     refs:
       - source_id: SRC-NIST-001
         locator: PW.7.1 and PW.8.1
-        source_type: standard-requirement
+        source_type: final-authoritative-guidance
         interpretation: Revisión/análisis y pruebas deben seleccionarse y aplicarse de forma basada en riesgo.
       - source_id: SRC-DORA-001
         locator: Continuous Integration capability / frequent integration and automated testing
@@ -34,7 +34,7 @@ controls:
     refs:
       - source_id: SRC-NIST-001
         locator: PS.1.1 and PW.4.1
-        source_type: standard-requirement
+        source_type: final-authoritative-guidance
         interpretation: Acceso de mínimo privilegio y componentes mantenidos de forma segura sustentan la protección de automatización y dependencias.
       - source_id: SRC-GH-001
         locator: Secure use reference / immutable actions, GITHUB_TOKEN permissions, untrusted input and self-hosted runners
@@ -45,7 +45,7 @@ controls:
     refs:
       - source_id: SRC-NIST-001
         locator: PO.5.1
-        source_type: standard-requirement
+        source_type: final-authoritative-guidance
         interpretation: La separación y protección de ambientes apoya límites de promoción; SSDF no prescribe aprobación de deployment.
       - source_id: SRC-GH-003
         locator: Deployments and environments / protection rules, required reviewers and environment secrets
@@ -56,7 +56,7 @@ controls:
     refs:
       - source_id: SRC-NIST-001
         locator: PS.1.1 and PO.5.1
-        source_type: standard-requirement
+        source_type: final-authoritative-guidance
         interpretation: Mínimo privilegio y límites de entorno sustentan identidad no humana separada y runners por confianza.
       - source_id: SRC-GH-004
         locator: OpenID Connect reference / id-token permission and customized subject claims
@@ -67,11 +67,11 @@ controls:
     refs:
       - source_id: SRC-NIST-001
         locator: PS.2.1
-        source_type: standard-requirement
+        source_type: final-authoritative-guidance
         interpretation: La información de verificación de integridad debe estar disponible para quien confía en el release.
       - source_id: SRC-SLSA-001
         locator: Build L1 / provenance exists; Build L2 / hosted build platform and consumer validates authenticity
-        source_type: approved-specification
+        source_type: conditional-specification-requirement
         interpretation: Provenance con digest es el mínimo conceptual; una afirmación L2 requiere builder y consumidor conformes.
       - source_id: SRC-GH-005
         locator: Artifact attestations / generate and verify attestations
@@ -82,7 +82,7 @@ controls:
     refs:
       - source_id: SRC-NIST-001
         locator: PS.1.1
-        source_type: baseline-security-principle
+        source_type: final-authoritative-guidance
         interpretation: El acceso de identidades humanas y no humanas a código/configuración debe ser de mínimo privilegio.
       - source_id: SRC-NIST-003
         locator: Concept paper / identity, authorization, auditing, non-repudiation and prompt-injection considerations

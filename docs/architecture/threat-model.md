@@ -40,7 +40,7 @@ por un control verificable, el gate permanece abierto.
 | TM-15 | Aprobación de producción se autoaprueba o se realiza desde identidad no autorizada. | SDC-004, SDC-007 | EVF-04, EVF-07 | Break-glass mal usado. |
 | TM-16 | Evidencia se borra, trunca, falsea o no puede correlacionarse con commit/run/deployment. | SDC-004, SDC-006 | EVF-08 | Retención y exportación organizacionales aún TBD. |
 | TM-17 | Migración de BD irreversible, no compatible N/N-1 o restore no probado acompaña al despliegue. | SDC-004 | EVF-04, EVF-08 | Error humano del DBA u operación de restore. |
-| TM-18 | Se publica información de empleador/cliente, detalle operativo o secreto en el repositorio de demostración. | SDC-001, SDC-007 | EVF-01, EVF-07 | Clasificación legal/contractual pendiente. |
+| TM-18 | Se publica información de empleador/cliente, detalle operativo o secreto en el repositorio de demostración. | PRRG-001 Public Reference Release Gate (precondición, no SDC) | EVF-09 | Clasificación legal/contractual pendiente. |
 
 ## Supuestos y límites
 

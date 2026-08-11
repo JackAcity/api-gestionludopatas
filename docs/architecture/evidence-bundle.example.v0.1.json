@@ -3,7 +3,10 @@
   "control_id": "SDC-002",
   "change_id": "PR-EXAMPLE-001",
   "repository": "example/secure-delivery-demo",
+  "scm_type": "git",
+  "commit_hash_algorithm": "sha1",
   "commit_sha": "0123456789abcdef0123456789abcdef01234567",
+  "commit_uri": "https://example.invalid/example/secure-delivery-demo/commit/0123456789abcdef0123456789abcdef01234567",
   "actor": "example-contributor",
   "actor_type": "human",
   "workflow": "ci-validation",
@@ -13,6 +16,27 @@
   "producer": "example-ci",
   "timestamp": "2026-08-11T00:00:00Z",
   "verifier": "independent-ci-validator",
+  "tool": {
+    "name": "example-validator",
+    "version": "0.1.0",
+    "invocation_digest": "sha256:abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+  },
+  "chain_of_custody": [
+    {
+      "event": "produced",
+      "actor": "example-ci",
+      "timestamp": "2026-08-11T00:00:00Z",
+      "system_uri": "https://example.invalid/runs/example-run-001",
+      "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    },
+    {
+      "event": "verified",
+      "actor": "independent-ci-validator",
+      "timestamp": "2026-08-11T00:01:00Z",
+      "system_uri": "https://example.invalid/verifications/EVB-DEMO-001",
+      "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    }
+  ],
   "evidence_type": "test-report",
   "evidence_uri": "https://example.invalid/evidence/EVB-DEMO-001",
   "content_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",

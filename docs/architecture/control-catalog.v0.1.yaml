@@ -8,7 +8,8 @@ controls:
     requirement: la integración debe satisfacer gates definidos por perfil de riesgo
     source_basis: [SRC-NIST-001, SRC-GH-002]
     traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-001
-    source_strength: final-standard-plus-platform-capability
+    source_strength: final-authoritative-guidance-plus-platform-capability
+    local_requirement_status: proposed-not-mandatory
     applicability: [medium, high]
     implementation_neutral: proteger rama de integración y exigir validación independiente
     github_candidate: ruleset con PR, checks requeridos, conversaciones resueltas y bypass mínimo
@@ -26,7 +27,8 @@ controls:
     requirement: el cambio debe tener validación determinista independiente del autor/agente
     source_basis: [SRC-DORA-001, SRC-NIST-001]
     traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-002
-    source_strength: research-plus-final-standard
+    source_strength: research-plus-final-authoritative-guidance
+    local_requirement_status: proposed-not-mandatory
     applicability: [low, medium, high]
     implementation_neutral: build aislado, pruebas y validación de contratos versionados
     github_candidate: workflow CI con token mínimo y evidencia de run
@@ -44,7 +46,8 @@ controls:
     requirement: dependencias de automatización y permisos deben ser explícitos y verificables
     source_basis: [SRC-GH-001, SRC-NIST-001]
     traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-003
-    source_strength: platform-guidance-plus-final-standard
+    source_strength: platform-guidance-plus-final-authoritative-guidance
+    local_requirement_status: proposed-not-mandatory
     applicability: [medium, high]
     implementation_neutral: versiones inmutables, mínimo privilegio y prohibición de ejecutar código no confiable con secretos
     github_candidate: SHA completa, permissions por job, sin pull_request_target salvo análisis aprobado
@@ -62,7 +65,8 @@ controls:
     requirement: producción requiere identidad, autorización y evidencia separadas del autor
     source_basis: [SRC-NIST-001, SRC-GH-003]
     traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-004
-    source_strength: final-standard-plus-platform-capability
+    source_strength: final-authoritative-guidance-plus-platform-capability
+    local_requirement_status: proposed-not-mandatory
     applicability: [high]
     implementation_neutral: gate de ambiente, segregación y registro de aprobación
     github_candidate: environment protegido, reglas de rama y aprobación no autoaprobable si el plan lo permite
@@ -80,7 +84,8 @@ controls:
     requirement: identidad no humana debe ser de mínimo privilegio, corta vida cuando sea viable y separada por ambiente
     source_basis: [SRC-GH-003, SRC-GH-004, SRC-NIST-001]
     traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-005
-    source_strength: platform-capability-plus-final-standard
+    source_strength: platform-capability-plus-final-authoritative-guidance
+    local_requirement_status: proposed-not-mandatory
     applicability: [medium, high]
     implementation_neutral: federación o credencial rotada; runner dedicado, segmentado y sin ejecutar PR no confiable
     github_candidate: OIDC con claims restringidos; runner labels/grupos y environment por ambiente
@@ -98,7 +103,8 @@ controls:
     requirement: release identificable por commit, builder y digest; verificar antes de confiar
     source_basis: [SRC-SLSA-001, SRC-GH-005]
     traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-006
-    source_strength: approved-spec-plus-platform-capability
+    source_strength: conditional-approved-specification-plus-platform-capability
+    local_requirement_status: proposed-not-mandatory
     applicability: [high]
     implementation_neutral: artefacto inmutable, SBOM/provenance y verificación de consumidor
     github_candidate: GitHub artifact attestations si plan permite; registro con digest y verificación CLI
@@ -117,6 +123,7 @@ controls:
     source_basis: [SRC-NIST-001, SRC-NIST-003, SRC-SF-001, SRC-DSL-001]
     traceability: docs/architecture/source-to-control-traceability.v0.2.yaml#SDC-007
     source_strength: local-engineering-decision-supported-by-baseline-and-emerging-evidence
+    local_requirement_status: proposed-not-mandatory
     applicability: [low, medium, high]
     implementation_neutral: separar intención, generación, auditoría, aprobación y despliegue
     github_candidate: CODEOWNERS/ruleset, CI independiente y identidad sin privilegio de merge/deploy

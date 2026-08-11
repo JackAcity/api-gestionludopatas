@@ -1,30 +1,29 @@
-# Gate 1 — lista de cierre
+# Gate 1 — registro de cierre auditable
 
-**Estado:** abierto. El cumplimiento de esta lista no autoriza implementación por sí
-solo: requiere aprobación humana registrada.
+**Technical design:** `ACCEPT` (revisión independiente Gate 1.1, 2026-08-11).
+**Overall Gate 1:** `HOLD` hasta resolver G1-08 y G1-09.
+**Regla:** `PASS` prueba diseño suficiente; `HOLD` bloquea cierre; `DEFERRED` tiene
+gate destino y no bloquea Gate 1; `N-A` no aplica al cierre técnico.
 
-- [ ] Source Register actualizado y cada fuente material clasificada por autoridad/estado.
-- [ ] Matriz source-to-control con locator, interpretación local y decisión separadas.
-- [ ] Las recomendaciones finales de NIST están diferenciadas de requisitos locales
-      adoptados; los `MUST` condicionales de SLSA indican el nivel que los activa.
-- [ ] Threat Model v0.2 revisado con familias SCM, Actions, dependencias, runners,
-      agentes, artefactos, evidencia y BD; cada ruta tiene control y familia EVF.
-- [ ] Evidence Bundle Schema y validador semántico tienen vectores reproducibles válidos,
-      attestation sin digest, verificador ausente e identidades no independientes.
-- [ ] Diseño de resolvers de SCM, identidad, workflow/run, registro y firma deja claro que
-      `content_digest` no establece autenticidad por sí solo.
-- [ ] Retención, ACL, borrado y ubicación reciben decisión organizacional.
-- [ ] Estrategia de evaluación usa cobertura de amenazas/modos de fallo, no un contador
-      como trust gate; el [plan de cobertura](../../evals/threat-to-evaluation-coverage.v0.1.yaml)
-      asigna toda ruta TM a control/precondición, familia y caso planificado.
-- [ ] Registro sanitizado de Gitleaks recibe confirmación humana o remediación.
-- [ ] Capability Map sincronizado con la condición pública del repositorio y API snapshots.
-- [ ] SDC-007 se acepta explícitamente como decisión local sustentada, no como requisito
-      NIST final.
-- [ ] Dueño legal/negocio decide si el material público contiene propiedad intelectual,
-      información operativa o contratos que deban sanitizarse.
-- [ ] Public Reference Release Gate (PRRG-001) obtiene evidencia y aprobación para todos
-      los elementos aplicables antes de cualquier claim de referencia pública.
-- [ ] Dueño del repositorio define descripción, licencia, topics y aviso de referencia.
-- [ ] PR #1 sigue congelado; no se usa como evidencia de aprobación de arquitectura.
-- [ ] Arquitecto/seguridad aprueba o rechaza Gate 1 y registra el veredicto.
+| ID | Criterio | Estado | Evidencia | Próximo responsable / gate |
+|---|---|---|---|---|
+| G1-01 | Registro de fuentes y autoridad | PASS | [Source Register](../sources/source-register.md), [NIST SSDF](../standards/nist-ssdf.md), [SLSA](../standards/slsa.md) | Revalidar en cada revisión de fuente. |
+| G1-02 | Trazabilidad source → locator → decisión | PASS | [Matriz](source-to-control-traceability.v0.2.yaml) | Mantener al introducir control nuevo. |
+| G1-03 | Modelo de amenazas | PASS | [Threat Model v0.2](threat-model.md), 18 rutas TM | Gate 2 ejecuta los casos seleccionados. |
+| G1-04 | Modelo y contrato de evidencia | PASS | [Schema](evidence-bundle.schema.v0.1.json), [semántica](evidence-semantic-validation.v0.1.md), 5 vectores | Gate 2 implementa resolvers de plataforma si el vertical los necesita. |
+| G1-05 | Estrategia y cobertura de evaluación | PASS | [Estrategia](../../evals/strategy.v0.2.md), [cobertura TM](../../evals/threat-to-evaluation-coverage.v0.1.yaml) | Gate 2 prioriza y ejecuta fixtures; no se usa un contador fijo como gate. |
+| G1-06 | Mapa de capacidades GitHub | PASS | [Capability Map v0.2](../github/platform-capability-map.md), snapshot API 2026-08-11 | Revalidar justo antes de implementar cada adaptador. |
+| G1-07 | Gobierno de agentes / SDC-007 | PASS | [Agent Governance](agent-governance.md), [trazabilidad SDC-007](source-to-control-traceability.v0.2.yaml) | Gate 2 aplica la política al vertical. |
+| G1-08 | Clasificación Gitleaks | HOLD | [Registro sanitizado](../security/gitleaks-classification.v0.1.md) contiene siete `candidate-false-positive`. | Humano autorizado: confirmar o remediar/rotar sin copiar secretos. |
+| G1-09 | Autorización IP y publicación pública | HOLD | [PRRG-001](public-reference-release-gate.md), OQ-008 | Dueño legal/negocio decide autorización, sanitización o retiro. |
+| G1-10 | Retención, ACL, ubicación y borrado operativos | DEFERRED | [Evidence Model](evidence-model.md) declara el límite. | Gate 2 / decisión de plataforma antes de producir evidencia sensible. |
+| G1-11 | OIDC, runner topology, artifact registry y trust provider | DEFERRED | [Open Questions](open-questions.md), [Capability Map](../github/platform-capability-map.md) | Gate 2 — Minimum Vertical Design. |
+| G1-12 | Descripción, licencia y topics de portafolio | DEFERRED | PRRG-001 incluye la precondición. | Cierre de PRRG-001, antes de claim de referencia pública. |
+| G1-13 | PR #1 congelado | PASS | PR #1 permanece draft, separado y sin merge. | Mantener hasta autorización de implementación. |
+| G1-14 | Aprobación independiente del diseño técnico | PASS | Veredicto Gate 1.1 registrado en el cuerpo de PR #2 y este registro. | Arquitecto/seguridad reabre solo ante cambio material. |
+
+## Cierre permitido
+
+Cuando G1-08 y G1-09 tengan evidencia humana autorizada, se actualizan esas filas a
+`PASS` o se registra una remediación. Solo entonces un humano puede declarar `OVERALL
+GATE 1: ACCEPT`; este documento no se autocierra por herramientas ni agentes.

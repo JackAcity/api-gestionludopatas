@@ -1,6 +1,6 @@
 # Secure Software Delivery Core — índice v0.2
 
-**Estado:** diseño y evaluación; no es una declaración de cumplimiento ni una implementación aprobada. **Fecha de corte:** 2026-08-11.
+**Estado:** `TECHNICAL DESIGN: ACCEPT`; `OVERALL GATE 1: HOLD` por Gitleaks e IP/autorización humana. No es una declaración de cumplimiento ni una implementación aprobada. **Fecha de corte:** 2026-08-11.
 
 Este corpus separa un modelo de control portable de sus adaptadores. Un requisito dice qué riesgo debe controlarse; un adaptador explica cómo podría implementarse en GitHub, GitLab o Azure DevOps. Ninguna capacidad de una plataforma se convierte en requisito por sí sola.
 
@@ -12,7 +12,7 @@ Este corpus separa un modelo de control portable de sus adaptadores. Un requisit
 | Riesgos | [modelo de amenazas v0.2](architecture/threat-model.md) | Propuesto |
 | Evidencia | [modelo](architecture/evidence-model.md) y [schema](architecture/evidence-bundle.schema.v0.1.json) | Propuesto |
 | GitHub | [mapa de capacidades v0.2](github/platform-capability-map.md) | Parcialmente verificado |
-| Evaluación | [matriz v0.2](../evals/matrix.v0.2.yaml), [estrategia](../evals/strategy.v0.2.md) y [cobertura TM](../evals/threat-to-evaluation-coverage.v0.1.yaml) | Diseñado; no ejecutado |
+| Evaluación | [matriz v0.2](../evals/matrix.v0.2.yaml), [estrategia](../evals/strategy.v0.2.md), [cobertura TM](../evals/threat-to-evaluation-coverage.v0.1.yaml) y [DoR](../evals/evaluation-definition-of-ready.v0.1.md) | Diseñado; no ejecutado |
 | Agentes y DSL | [gobierno de agentes](architecture/agent-governance.md) | Propuesto |
 | Publicación | [Public Reference Release Gate](architecture/public-reference-release-gate.md) | HOLD humano |
 | Publicación | [Public Reference Release Gate](architecture/public-reference-release-gate.md) | HOLD humano |

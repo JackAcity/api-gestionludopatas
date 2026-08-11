@@ -40,3 +40,11 @@ python evals/evidence/validate_vectors.py
 
 El validador de fixtures no afirma que un commit, workflow run, artefacto o firma real
 existan. Esa limitación es intencional y forma parte del Gate 1.
+
+## Mejora no bloqueante para Gate 2
+
+El harness actual aplica SEM-001 a sus fixtures porque todos afirman verificación
+independiente. Antes de usarlo fuera de fixtures debe consultar una política explícita:
+`control_id → verification_policy → independence_required`. Así una regla contextual no
+se convierte en prohibición universal. Está registrada como EVAL-DOR-002 y no reabre el
+diseño de Gate 1.

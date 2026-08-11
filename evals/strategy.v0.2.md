@@ -50,3 +50,6 @@ No se avanza si ocurre cualquiera de estos casos:
 
 Las suites y fixtures se diseñan autocontenidos, sintéticos y sin secretos reales. Las
 variantes se añaden por modo de fallo nuevo, no para alcanzar un contador.
+
+Antes de ejecutar fixtures, aplicar la [Definition of Ready](evaluation-definition-of-ready.v0.1.md): separa violaciones de excepciones válidas y evita imponer SEM-001 a controles
+que no requieren independencia.

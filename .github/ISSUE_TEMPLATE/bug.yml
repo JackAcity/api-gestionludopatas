@@ -1,0 +1,26 @@
+name: Defecto
+description: Registrar un comportamiento que contradice el contrato o la operacion esperada.
+title: "[bug]: "
+labels: ["type:bug", "status:ready"]
+body:
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamiento esperado y contrato afectado
+      description: Incluye endpoint, codigo GL, OpenSpec o procedimiento relacionado. No incluyas secretos ni datos personales.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamiento actual y evidencia sanitizada
+      description: Pasos reproducibles, correlation ID y hora con valores sensibles eliminados.
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Riesgo
+      options: [bajo, medio, alto]
+    validations:
+      required: true

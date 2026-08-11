@@ -1,0 +1,63 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Ambiente autorizado para el despliegue.
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy-${{ inputs.environment }}
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: ${{ inputs.environment }}
+    runs-on: [self-hosted, linux, x64, "gestionludopatas-${{ inputs.environment }}"]
+    timeout-minutes: 30
+    env:
+      DEPLOY_ENV_FILE: ${{ vars.DEPLOY_ENV_FILE }}
+      HEALTHCHECK_URL: ${{ vars.HEALTHCHECK_URL }}
+    steps:
+      - name: Checkout the approved main revision
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Fail closed when runner configuration is incomplete
+        run: |
+          test -n "$DEPLOY_ENV_FILE"
+          test -r "$DEPLOY_ENV_FILE"
+          test -n "$HEALTHCHECK_URL"
+
+      - name: Render compose configuration without exposing values
+        working-directory: api-gestionludopatas
+        run: docker compose --env-file "$DEPLOY_ENV_FILE" config --quiet
+
+      - name: Reconcile the approved release
+        working-directory: api-gestionludopatas
+        run: docker compose --env-file "$DEPLOY_ENV_FILE" up --detach --build --remove-orphans
+
+      - name: Verify the service health endpoint
+        run: |
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error "$HEALTHCHECK_URL"; then
+              exit 0
+            fi
+            echo "Healthcheck no saludable en intento $attempt de 12; reintentando." >&2
+            sleep 5
+          done
+          echo 'El healthcheck no alcanzo estado saludable.' >&2
+          exit 1

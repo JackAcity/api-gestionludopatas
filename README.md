@@ -16,6 +16,8 @@ HashiCorp Vault.
 Consulta primero [`api-gestionludopatas/README.md`](api-gestionludopatas/README.md).
 Para el pase pendiente de idempotencia persistente, revisar
 [`api-gestionludopatas/database/idempotencia-persistente/PASE_DBA_Y_ARQUITECTURA.md`](api-gestionludopatas/database/idempotencia-persistente/PASE_DBA_Y_ARQUITECTURA.md).
+El flujo de calidad, seguridad, despliegue y los pendientes de infraestructura estan en
+[`docs/devops/PLAN_CI_CD.md`](docs/devops/PLAN_CI_CD.md).
 
 ## Seguridad de versionado
 

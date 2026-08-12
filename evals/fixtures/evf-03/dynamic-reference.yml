@@ -1,0 +1,7 @@
+name: dynamic-reference
+on: workflow_dispatch
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@${{ inputs.revision }}

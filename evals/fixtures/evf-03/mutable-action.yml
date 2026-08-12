@@ -1,0 +1,7 @@
+name: mutable-action
+on: workflow_dispatch
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5

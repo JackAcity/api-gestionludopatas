@@ -5,10 +5,7 @@
 **Comando conceptual:** `gitleaks git <repo> --log-opts=--all --redact=100`.
 **Regla:** no se almacenan coincidencias, literales ni secretos en este registro.
 
-El escáner informó siete coincidencias de la regla `generic-api-key` en el commit
-`799324ce8d4a8da21fd8aec72bc4d112d57ae121`. La clasificación siguiente es **preliminar automatizada**: una persona
-autorizada debe confirmarla antes de que cualquier documento afirme que el repositorio
-está libre de secretos.
+El escáner informó siete coincidencias de la regla `generic-api-key` en el commit `799324ce8d4a8da21fd8aec72bc4d112d57ae121`. La preclasificación fue confirmada por decisión humana el 2026-08-12 para GL-001 a GL-007; véase el [registro de cierre Gate 1](../architecture/gate-1-human-closure-2026-08-12.md). La decisión no afirma que el repositorio esté libre de secretos.
 
 ## Cálculo reproducible de `location_hash`
 
@@ -26,7 +23,7 @@ decimal_start_line
 contiene `.` ni `..`. El contenido detectado, literal, valor de secreto y columna no
 forman parte de la entrada. Esto permite reproducir la ubicación sin revelar el match.
 
-| ID | `location_hash` | Clasificación preliminar | Razonamiento sanitizado | Reviewer | Fecha | Remediación |
+| ID | `location_hash` | Clasificación inicial | Razonamiento sanitizado | Preclasificación | Fecha | Remediación |
 |---|---|---|---|---|---|---|
 | GL-001 | `sha256:0786ae2be7c8999b8430cf76d9a34368e2fa256ccf226dff7379eb7caba1eebc` | candidate-false-positive | Constante de código de error; no hay asignación de secreto ni valor de alta entropía. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
 | GL-002 | `sha256:ffe860bdcc1f06ca4bc6ffed47f2937936df62e43465ec347b26e50cd1ff32f3` | candidate-false-positive | Constante de código de error; no hay asignación de secreto ni valor de alta entropía. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
@@ -36,7 +33,4 @@ forman parte de la entrada. Esto permite reproducir la ubicación sin revelar el
 | GL-006 | `sha256:e3e391bd7038503d8cb1911c14404325de1eb0b0b2599cecfd688b4e2443c21a` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
 | GL-007 | `sha256:349f1f4f3e3b45c28f3fae1d8e18471ac0df11d6817423dda8f986805e0bcba9` | candidate-false-positive | Código de error de contrato OpenAPI, no credencial. | Codex preclassification; human confirmation required | 2026-08-11 | Ninguna hasta confirmación. |
 
-**Prohibición de claim:** hasta confirmación humana y reescaneo posterior, no se afirma
-"secret-free", "sin secretos" ni equivalentes. Si se reclasifica un caso como exposición,
-se detiene publicación/merge, se rota la credencial y se documenta la remediación sin
-copiar el valor secreto.
+**Límite de claim:** la confirmación cubre únicamente GL-001 a GL-007 en el commit indicado; no permite afirmar "secret-free", "sin secretos" ni equivalentes sin un reescaneo posterior. Si se reclasifica un caso como exposición, se detiene publicación/merge, se rota la credencial y se documenta la remediación sin copiar el valor secreto.

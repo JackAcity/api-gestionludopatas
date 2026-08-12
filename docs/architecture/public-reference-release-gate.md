@@ -2,7 +2,9 @@
 
 **Tipo:** precondición de publicación del laboratorio; no es el octavo control del
 catálogo Secure Delivery.
-**Estado:** bloqueado por decisión humana.
+**Estado:** autorización temporal de visibilidad registrada; claim de referencia pública aún no autorizado.
+
+La [decisión humana de Gate 1](gate-1-human-closure-2026-08-12.md) autoriza mantener público este repositorio durante el trabajo actual. No sustituye las precondiciones de este gate ni autoriza una promoción como referencia pública.
 
 Los controles SDC protegen el proceso de entrega. No resuelven por sí mismos el derecho
 a publicar código, contratos, nombres de dominio o detalles operativos de un empleador o

@@ -1,5 +1,13 @@
 # Plan de plataforma: CI/CD, DevSecOps y agentes
 
+## Reconciliación de estado — 2026-08-12
+
+La [PR #1](https://github.com/JackAcity/api-gestionludopatas/pull/1) que introdujo los workflows fue fusionada el 2026-08-11, antes del cierre formal de Gate 1. Este documento describe una **implementación observada pre-Gate**, no una afirmación de que cada control esté aprobado, operativo o sea suficiente.
+Los runs de CI y DevSecOps en `main` han sido exitosos, pero checks verdes no prueban por sí solos protección de mainline, independencia de identidad, autorización de despliegue o integridad de artefacto.
+
+El estado gobernante es el [registro de Gate 1](../architecture/gate-1-closure-checklist.md): `TECHNICAL DESIGN: ACCEPT`, `OVERALL GATE 1: HOLD`.
+Este documento no autoriza ejecutar un despliegue ni presentarse como referencia aprobada mientras G1-08 (Gitleaks) y G1-09 (IP/autorización pública) continúen en `HOLD`. Gate 2 reevaluará este baseline y elegirá qué partes, si alguna, satisfacen los controles aprobados.
+
 ## Resultado objetivo
 
 El repositorio entrega una API .NET reproducible y trazable: cada cambio pasa por una PR,
@@ -21,7 +29,9 @@ flowchart LR
   H --> O[Operacion y metricas]
 ```
 
-## Lo que queda activo con esta entrega
+## Implementación observada en `main` — no controles validados
+
+Los comportamientos que siguen son hipótesis de implementación y deben producir evidencia adversarial en Gate 2 antes de presentarse como controles efectivos.
 
 | Control | Implementacion | Criterio de bloqueo |
 |---|---|---|

@@ -3,7 +3,8 @@
 **Technical design:** `ACCEPT` (revisión independiente Gate 1.1, 2026-08-11).
 **Overall Gate 1:** `HOLD` hasta resolver G1-08 y G1-09.
 **Regla:** `PASS` prueba diseño suficiente; `HOLD` bloquea cierre; `DEFERRED` tiene
-gate destino y no bloquea Gate 1; `N-A` no aplica al cierre técnico.
+gate destino y no bloquea Gate 1; `N-A` describe una implementación histórica fuera del
+alcance de validación de Gate 1.
 
 | ID | Criterio | Estado | Evidencia | Próximo responsable / gate |
 |---|---|---|---|---|
@@ -19,7 +20,7 @@ gate destino y no bloquea Gate 1; `N-A` no aplica al cierre técnico.
 | G1-10 | Retención, ACL, ubicación y borrado operativos | DEFERRED | [Evidence Model](evidence-model.md) declara el límite. | Gate 2 / decisión de plataforma antes de producir evidencia sensible. |
 | G1-11 | OIDC, runner topology, artifact registry y trust provider | DEFERRED | [Open Questions](open-questions.md), [Capability Map](../github/platform-capability-map.md) | Gate 2 — Minimum Vertical Design. |
 | G1-12 | Descripción, licencia y topics de portafolio | DEFERRED | PRRG-001 incluye la precondición. | Cierre de PRRG-001, antes de claim de referencia pública. |
-| G1-13 | PR #1 congelado | PASS | PR #1 permanece draft, separado y sin merge. | Mantener hasta autorización de implementación. |
+| G1-13 | Implementación CI/CD pre-Gate | N-A | [PR #1](https://github.com/JackAcity/api-gestionludopatas/pull/1) fue fusionado el 2026-08-11; CI/DevSecOps del `main` actual registran éxito. | Gate 2 debe reevaluar el baseline contra controles aprobados; checks verdes y el merge no son evidencia de cierre de Gate 1. |
 | G1-14 | Aprobación independiente del diseño técnico | PASS | Veredicto Gate 1.1 registrado en el cuerpo de PR #2 y este registro. | Arquitecto/seguridad reabre solo ante cambio material. |
 
 ## Cierre permitido

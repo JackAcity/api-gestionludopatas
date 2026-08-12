@@ -1,0 +1,5 @@
+name: mutable-reusable-workflow
+on: workflow_dispatch
+jobs:
+  fixture:
+    uses: example/workflows/.github/workflows/reusable.yml@main

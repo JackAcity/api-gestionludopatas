@@ -77,7 +77,7 @@ jobs:
         run: docker build --pull --tag gestionludopatas-api:security api-gestionludopatas
 
       - name: Fail on fixable high or critical image vulnerabilities
-        uses: aquasecurity/trivy-action@2736533278103862a861f4a35ebac3e97854d956 # master
+        uses: aquasecurity/trivy-action@d2a0b60797ff03db6132bd4e2b293f9b37081297 # master
         with:
           image-ref: gestionludopatas-api:security
           format: table
